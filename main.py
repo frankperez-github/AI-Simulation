@@ -11,12 +11,12 @@ n_households = 10
 # Parámetros del modelo
 initial_min_budget = 1830
 initial_mean_budget = 4127
-count_prodcuts=6
+count_products=6
 base_price={}
 change_in_price_pct={}
 mean_alpha_quintiles={}
 sd_alpha={}
-for i in range(count_prodcuts):
+for i in range(count_products):
     base_price[i] = 200
     change_in_price_pct[i] = 20
     mean_alpha_quintiles[i] = [0.15, 0.13, 0.12, 0.1, 0.08]
@@ -60,8 +60,8 @@ for i in range(n_households):
 
 Customers=distribute_budgets(Customers,initial_min_budget,initial_mean_budget)
 Customers=classify_quintiles(Customers)
-Customers=assign_alpha(Customers,count_prodcuts,mean_alpha_quintiles,sd_alpha)
-Customers=calculate_demand_utility(Customers,base_price,count_prodcuts)
+Customers=assign_alpha(Customers,count_products,mean_alpha_quintiles,sd_alpha)
+Customers=calculate_demand_utility(Customers,base_price,count_products)
 
 agents = [
     CompanyAgent("A", market_env),
