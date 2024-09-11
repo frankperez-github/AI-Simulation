@@ -2,6 +2,16 @@ import random
 from BaseAgent import BDI_Agent
 
 class CustomerAgent(BDI_Agent):
+    def __init__(self, name, market_env):
+        super().__init__(name, market_env)
+        self.beliefs['budget'] = 0
+        self.beliefs['quintil']=-1
+        self.beliefs['alpha']={}
+        self.beliefs['demand']={}
+        self.beliefs['expenditure']={}
+        self.beliefs['utility']={}
+
+
     def perceive_environment(self):
         self.beliefs['available_products'] = self.market_env.public_variables['available_products']
         self.beliefs['product_prices'] = self.market_env.public_variables['product_prices']

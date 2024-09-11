@@ -3,6 +3,24 @@ from Environment import MarketEnvironment
 from Company import CompanyAgent
 from Customer import CustomerAgent
 from Supplier import SupplierAgent
+from utils import distribute_budgets,classify_quintiles, assign_alpha, calculate_demand_utility
+
+# Número de hogares
+n_households = 10
+
+# Parámetros del modelo
+initial_min_budget = 1830
+initial_mean_budget = 4127
+count_prodcuts=6
+base_price={}
+change_in_price_pct={}
+mean_alpha_quintiles={}
+sd_alpha={}
+for i in range(count_prodcuts):
+    base_price[i] = 200
+    change_in_price_pct[i] = 20
+    mean_alpha_quintiles[i] = [0.15, 0.13, 0.12, 0.1, 0.08]
+    sd_alpha[i] = 0.02
 
 def print_environment_data(market_env):
     available_products_df = pd.DataFrame(list(market_env.public_variables['available_products'].items()), columns=['Product', 'Available Stock'])
@@ -11,9 +29,9 @@ def print_environment_data(market_env):
 
     print("\n----- Market Environment Data -----")
     print("\nAvailable Products (Stock):")
-    print(available_products_df)
+    #print(available_products_df)
     print("\nProduct Prices:")
-    print(product_prices_df)
+    #print(product_prices_df)
     print("\nCompany Revenue:")
     print(revenue_df)
     print("-----------------------------------\n")
@@ -33,23 +51,24 @@ def run_simulation(agents, market_env, steps=30):
 file_path = './supermarket_sales.csv'
 data = pd.read_csv(file_path)
 
+
 market_env = MarketEnvironment(data)
+
+Customers=[]
+for i in range(n_households):
+    Customers.append(CustomerAgent("Cliente"+str(i),market_env))
+
+Customers=distribute_budgets(Customers,initial_min_budget,initial_mean_budget)
+Customers=classify_quintiles(Customers)
+Customers=assign_alpha(Customers,count_prodcuts,mean_alpha_quintiles,sd_alpha)
+Customers=calculate_demand_utility(Customers,base_price,count_prodcuts)
 
 agents = [
     CompanyAgent("A", market_env),
     CompanyAgent("B", market_env),
     CompanyAgent("C", market_env),
-    CustomerAgent("Cliente1", market_env),
-    CustomerAgent("Cliente2", market_env),
-    CustomerAgent("Cliente3", market_env),
-    CustomerAgent("Cliente4", market_env),
-    CustomerAgent("Cliente5", market_env),
-    CustomerAgent("Cliente6", market_env),
-    CustomerAgent("Cliente7", market_env),
-    CustomerAgent("Cliente8", market_env),
-    CustomerAgent("Cliente9", market_env),
-    CustomerAgent("Cliente10", market_env),
     SupplierAgent("Suministrador1", market_env)
 ]
+agents+=Customers
 
 run_simulation(agents, market_env)
