@@ -1,9 +1,10 @@
 import pandas as pd
-from Environment import MarketEnvironment
+from Environment import market_env
 from Company import CompanyAgent
 from Customer import CustomerAgent
 from Supplier import SupplierAgent
 from utils import distribute_budgets,classify_quintiles, assign_alpha, calculate_demand_utility
+
 
 # Número de hogares
 n_households = 10
@@ -48,11 +49,6 @@ def run_simulation(agents, market_env, steps=30):
 
         print_environment_data(market_env)
 
-file_path = './supermarket_sales.csv'
-data = pd.read_csv(file_path)
-
-
-market_env = MarketEnvironment(data)
 
 Customers=[]
 for i in range(n_households):

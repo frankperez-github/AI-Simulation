@@ -1,10 +1,12 @@
 from BaseAgent import BDI_Agent
+from Environment import market_env
+
 
 class CompanyAgent(BDI_Agent):
     def perceive_environment(self):
-        self.beliefs['product_prices'] = self.market_env.public_variables['product_prices']
-        self.beliefs['competition_levels'] = self.market_env.public_variables['competition_levels']
-        self.beliefs['market_demand'] = self.market_env.public_variables['market_demand']
+        self.beliefs['product_prices'] = market_env.public_variables['product_prices']
+        self.beliefs['competition_levels'] = market_env.public_variables['competition_levels']
+        self.beliefs['market_demand'] = market_env.public_variables['market_demand']
 
     def form_desires(self):
         for product, _ in self.beliefs['product_prices'].get(self.name, {}).items():
@@ -29,6 +31,6 @@ class CompanyAgent(BDI_Agent):
         self.intentions.remove(intention)
 
     def adjust_price(self, adjustment):
-        for product, price in self.market_env.public_variables['product_prices'].get(self.name, {}).items():
+        for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():
             new_price = price * (1 + adjustment)
-            self.market_env.public_variables['product_prices'][self.name][product] = new_price
+            market_env.public_variables['product_prices'][self.name][product] = new_price

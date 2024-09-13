@@ -1,5 +1,7 @@
 import random
 
+import pandas as pd
+
 class MarketEnvironment:
     def __init__(self, data):
         self.public_variables = {
@@ -30,7 +32,7 @@ class MarketEnvironment:
         # Populate product_prices and available_products
         for _, row in data.iterrows():
             product = row['Product line']
-            income = row['gross income']  # Se usará solo el gross income
+            income = row['gross income']
             branch = row['Branch']
             price = row['Unit price']
             quantity = row['Quantity']
@@ -38,7 +40,7 @@ class MarketEnvironment:
             # Add product prices by company (branch)
             if branch not in self.public_variables['product_prices']:
                 self.public_variables['product_prices'][branch] = {}
-                self.public_variables['product_gross_income'][branch] = {}  # Se almacena el ingreso bruto
+                self.public_variables['product_gross_income'][branch] = {}
 
             self.public_variables['product_prices'][branch][product] = price
             self.public_variables['product_gross_income'][branch][product] = income
@@ -77,7 +79,15 @@ class MarketEnvironment:
     def adjust_prices_based_on_dollar(self):
         for company, products in self.public_variables['product_prices'].items():
             for product, price in products.items():
-                if self.public_variables['dollar_behavior'] == 1:  # Dólar en aumento
-                    self.public_variables['product_prices'][company][product] = price * 1.05  # Aumentar precios un 5%
-                elif self.public_variables['dollar_behavior'] == -1:  # Dólar en caída
-                    self.public_variables['product_prices'][company][product] = price * 0.95  # Reducir precios un 5%
+                if self.public_variables['dollar_behavior'] == 1:  
+                    self.public_variables['product_prices'][company][product] = price * 1.05
+                elif self.public_variables['dollar_behavior'] == -1: 
+                    self.public_variables['product_prices'][company][product] = price * 0.95
+
+
+
+file_path = './supermarket_sales.csv'
+data = pd.read_csv(file_path)
+
+
+market_env = MarketEnvironment(data)

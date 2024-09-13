@@ -1,5 +1,8 @@
 import random
 from BaseAgent import BDI_Agent
+from Environment import market_env
+
+
 
 class CustomerAgent(BDI_Agent):
     def __init__(self, name, market_env):
@@ -13,8 +16,8 @@ class CustomerAgent(BDI_Agent):
 
 
     def perceive_environment(self):
-        self.beliefs['available_products'] = self.market_env.public_variables['available_products']
-        self.beliefs['product_prices'] = self.market_env.public_variables['product_prices']
+        self.beliefs['available_products'] = market_env.public_variables['available_products']
+        self.beliefs['product_prices'] = market_env.public_variables['product_prices']
 
     def form_desires(self):
         self.desires['buy_products'] = random.choice([True, False])
@@ -37,31 +40,31 @@ class CustomerAgent(BDI_Agent):
             cheapest_company = cheapest_companies[i]
             quantity = quantities[i]
 
-            available_stock = self.market_env.public_variables['available_products'].get(selected_product, 0)
+            available_stock = market_env.public_variables['available_products'].get(selected_product, 0)
             if available_stock >= quantity:
                 # Reduce stock
-                self.market_env.public_variables['available_products'][selected_product] -= quantity
+                market_env.public_variables['available_products'][selected_product] -= quantity
 
                 # Get the revenue (gross income) per unit for the selected product from the cheapest company
-                revenue_per_unit = self.market_env.public_variables['product_gross_income'][cheapest_company][selected_product]
+                revenue_per_unit = market_env.public_variables['product_gross_income'][cheapest_company][selected_product]
 
                 # Update revenue for the company
-                if cheapest_company in self.market_env.public_variables['revenue']:
-                    self.market_env.public_variables['revenue'][cheapest_company] += revenue_per_unit * quantity
+                if cheapest_company in market_env.public_variables['revenue']:
+                    market_env.public_variables['revenue'][cheapest_company] += revenue_per_unit * quantity
                 else:
-                    self.market_env.public_variables['revenue'][cheapest_company] = revenue_per_unit * quantity
+                    market_env.public_variables['revenue'][cheapest_company] = revenue_per_unit * quantity
 
                 # Increase market demand
-                if selected_product in self.market_env.public_variables['market_demand']:
-                    self.market_env.public_variables['market_demand'][selected_product] += quantity
+                if selected_product in market_env.public_variables['market_demand']:
+                    market_env.public_variables['market_demand'][selected_product] += quantity
                 else:
-                    self.market_env.public_variables['market_demand'][selected_product] = quantity
+                    market_env.public_variables['market_demand'][selected_product] = quantity
 
                 # Update market trend (increase trend for the product)
-                if selected_product in self.market_env.public_variables['market_trends']:
-                    self.market_env.public_variables['market_trends'][selected_product] += 1
+                if selected_product in market_env.public_variables['market_trends']:
+                    market_env.public_variables['market_trends'][selected_product] += 1
                 else:
-                    self.market_env.public_variables['market_trends'][selected_product] = 1
+                    market_env.public_variables['market_trends'][selected_product] = 1
 
                 # Print confirmation (optional)
                 # print(f"Customer {self.name} bought {quantity} units of {selected_product} from {cheapest_company}, gross income per unit: {revenue_per_unit}")
