@@ -28,6 +28,7 @@ class CustomerAgent(BDI_Agent):
             selected_products, cheapest_companies, quantities = self.buy_random_cheapest_products()
             if selected_products:
                 self.buy(selected_products, cheapest_companies, quantities)
+        # New intentions here
         self.intentions.remove(intention)
     
     def buy(self, selected_products, cheapest_companies, quantities):
