@@ -10,11 +10,11 @@ def distribute_budgets(households, initial_min_budget, mean_budget):
     budgets[budgets <= initial_min_budget] = initial_min_budget
     
     # Normalizar el presupuesto para que el promedio sea 100
-    normalized_budgets = (budgets * (100 / mean_actual)).round(3)
+    #normalized_budgets = (budgets * (100 / mean_actual)).round(3)
 
     # Asignar los presupuestos a los hogares
     for i, household in enumerate(households):
-        household.beliefs['budget'] = normalized_budgets[i]
+        household.beliefs['budget'] = budgets[i]
     
     return households
 

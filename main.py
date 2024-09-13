@@ -29,9 +29,9 @@ def print_environment_data(market_env):
 
     print("\n----- Market Environment Data -----")
     print("\nAvailable Products (Stock):")
-    #print(available_products_df)
+    print(available_products_df)
     print("\nProduct Prices:")
-    #print(product_prices_df)
+    print(product_prices_df)
     print("\nCompany Revenue:")
     print(revenue_df)
     print("-----------------------------------\n")
