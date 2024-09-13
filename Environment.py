@@ -14,7 +14,8 @@ class MarketEnvironment:
             'market_trends': {},
             'revenue': {},
             'company_popularity': {},
-            'dollar_behavior': 0
+            'dollar_behavior': 0,
+            'product_dict':{}
         }
 
         self.hidden_variables = {
@@ -26,6 +27,14 @@ class MarketEnvironment:
         self.initialize_market_variables()
 
     def load_data(self, data):
+
+        # Obtener los nombres únicos de la columna 'Product line'
+        unique_products = data['Product line'].unique()
+
+        # Crear el diccionario con un ID único para cada producto, comenzando desde 0
+        product_dict = {product: idx for idx, product in enumerate(unique_products)}
+        self.public_variables['product_dict']=product_dict
+
         # Temporarily store the companies (branches) selling each product to compute competition levels
         product_competition = {}
 

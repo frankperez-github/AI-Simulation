@@ -101,8 +101,8 @@ class CustomerAgent(BDI_Agent):
                         cheapest_price = price
                         cheapest_company = company
 
-            quantity = random.randint(1, 10)
-
+            #quantity = random.randint(1, 10)
+            quantity= int(self.beliefs['alpha'][self.market_env.public_variables['product_dict'][selected_product]]*self.beliefs['budget']/cheapest_price)
             cheapest_companies.append(cheapest_company)
             quantities.append(quantity)
 
