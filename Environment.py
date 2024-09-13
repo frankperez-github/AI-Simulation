@@ -83,8 +83,6 @@ class MarketEnvironment:
             new_popularity = self.public_variables['company_popularity'][company] + change
             self.public_variables['company_popularity'][company] = min(max(new_popularity, 1), 10)
 
-        print("El entorno del mercado ha sido actualizado.")
-
     def adjust_prices_based_on_dollar(self):
         for company, products in self.public_variables['product_prices'].items():
             for product, price in products.items():
