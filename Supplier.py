@@ -1,11 +1,14 @@
 import random
 from BaseAgent import BDI_Agent
+from Environment import market_env
+
+
 
 class SupplierAgent(BDI_Agent):
     def perceive_environment(self):
         # Update beliefs about market demand and available products
-        self.beliefs['market_demand'] = self.market_env.public_variables['market_demand']
-        self.beliefs['available_products'] = self.market_env.public_variables['available_products']
+        self.beliefs['market_demand'] = market_env.public_variables['market_demand']
+        self.beliefs['available_products'] = market_env.public_variables['available_products']
 
     def form_desires(self):
         # The supplier wants to supply products
@@ -25,7 +28,7 @@ class SupplierAgent(BDI_Agent):
         for product, demand in self.beliefs['market_demand'].items():
             if demand > 0:
                 supply_quantity = demand  # Supply demand
-                self.market_env.public_variables['market_demand'][product] = 0
+                market_env.public_variables['market_demand'][product] = 0
                 self.update_stock(product, supply_quantity)
             else:
                 if random.random() < 0.3:  # 30% of chance of supply the product
@@ -33,15 +36,15 @@ class SupplierAgent(BDI_Agent):
                     self.update_stock(product, supply_quantity)
 
             # Update market trend (increase trend for the product if supplied)
-            if product in self.market_env.public_variables['market_trends']:
-                self.market_env.public_variables['market_trends'][product] += 1
+            if product in market_env.public_variables['market_trends']:
+                market_env.public_variables['market_trends'][product] += 1
             else:
-                self.market_env.public_variables['market_trends'][product] = 1
+                market_env.public_variables['market_trends'][product] = 1
 
 
     def update_stock(self, product, quantity):
         # Update the inventory in the environment
-        if product in self.market_env.public_variables['available_products']:
-            self.market_env.public_variables['available_products'][product] += quantity
+        if product in market_env.public_variables['available_products']:
+            market_env.public_variables['available_products'][product] += quantity
         else:
-            self.market_env.public_variables['available_products'][product] = quantity
+            market_env.public_variables['available_products'][product] = quantity
