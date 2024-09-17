@@ -1,4 +1,5 @@
 import logging
+import random
 import os
 import pandas as pd
 from Environment import market_env
@@ -64,7 +65,9 @@ def run_simulation(agents, market_env, steps=30):
 # Configuración de clientes (hogares)
 Customers = []
 for i in range(n_households):
-    Customers.append(CustomerAgent("Cliente" + str(i), market_env))
+    actitudes=['tacanno','populista','precavido','random']
+    actitud=random.choices(actitudes,[0.25,0.25,0.25,0.25])
+    Customers.append(CustomerAgent("Cliente" + str(i), market_env,actitud))
 
 Customers = distribute_budgets(Customers, initial_min_budget, initial_mean_budget)
 Customers = classify_quintiles(Customers)
