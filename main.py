@@ -23,16 +23,16 @@ logging.basicConfig(
 n_households = 10
 
 # Parámetros del modelo
-initial_min_budget = 1830
-initial_mean_budget = 4127
+initial_min_budget = 600
+initial_mean_budget = 1500
 count_products = 6
-base_price = {}
-change_in_price_pct = {}
+#base_price = {}
+#change_in_price_pct = {}
 mean_alpha_quintiles = {}
 sd_alpha = {}
 for i in range(count_products):
-    base_price[i] = 200
-    change_in_price_pct[i] = 20
+    #base_price[i] = 200
+    #change_in_price_pct[i] = 20
     mean_alpha_quintiles[i] = [0.15, 0.13, 0.12, 0.1, 0.08]
     sd_alpha[i] = 0.02
 
@@ -66,13 +66,13 @@ def run_simulation(agents, market_env, steps=30):
 Customers = []
 for i in range(n_households):
     actitudes=['tacanno','populista','precavido','random']
-    actitud=random.choices(actitudes,[0.25,0.25,0.25,0.25])
+    actitud=random.choices(actitudes,[0.25,0.25,0.25,0.25])[0]
     Customers.append(CustomerAgent("Cliente" + str(i), market_env,actitud))
 
 Customers = distribute_budgets(Customers, initial_min_budget, initial_mean_budget)
 Customers = classify_quintiles(Customers)
 Customers = assign_alpha(Customers, count_products, mean_alpha_quintiles, sd_alpha)
-Customers = calculate_demand_utility(Customers, base_price, count_products)
+#Customers = calculate_demand_utility(Customers, base_price, count_products)
 
 agents = [
     CompanyAgent("A", market_env),

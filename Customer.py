@@ -2,6 +2,7 @@ import random
 import logging
 from BaseAgent import BDI_Agent
 from Environment import market_env
+import numpy as np
 
 # Configurar el logger para mostrar solo mensajes
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
@@ -56,7 +57,12 @@ class CustomerAgent(BDI_Agent):
                 self.buy(selected_products, cheapest_companies, quantities)  
         elif intention == 'buy_products_randomly':
             logging.info(f"{self.name} will execute the intention: {intention}")
-            selected_products, cheapest_companies, quantities = self.buy_products_randomlys()
+            selected_products, cheapest_companies, quantities = self.buy_products_randomly()
+            if selected_products:
+                self.buy(selected_products, cheapest_companies, quantities)  
+        elif intention == 'buy_products_but_think_about_it':
+            logging.info(f"{self.name} will execute the intention: {intention}")
+            selected_products, cheapest_companies, quantities = self.buy_products_but_think_about_it()
             if selected_products:
                 self.buy(selected_products, cheapest_companies, quantities)       
         # Remover la intención ejecutada
@@ -67,7 +73,6 @@ class CustomerAgent(BDI_Agent):
             selected_product = selected_products[i]
             cheapest_company = cheapest_companies[i]
             quantity = quantities[i]
-
             available_stock = market_env.public_variables['available_products'].get(selected_product, 0)
             if quantity>0:
                 if available_stock >= quantity:
@@ -150,7 +155,6 @@ class CustomerAgent(BDI_Agent):
 
             popular_company = None
             pop = float('inf')*-1
-
             for company, popularity in self.beliefs['company_popularity'].items():
                 if popularity>pop:
                     pop=popularity
@@ -162,7 +166,7 @@ class CustomerAgent(BDI_Agent):
                     populars_companies.append(popular_company)
                     quantities.append(quantity)
 
-            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {cheapest_companies}")
+            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {populars_companies}")
             return selected_products, populars_companies, quantities
 
 
@@ -182,11 +186,47 @@ class CustomerAgent(BDI_Agent):
 
             for selected_product in selected_products:
 
-                comp=[x for x in self.self.beliefs['product_prices'] if selected_product in self.beliefs['product_prices'][x]]
+                comp=[x for x in self.beliefs['product_prices'] if selected_product in self.beliefs['product_prices'][x]]
                 company=random.choice(comp)
                 quantity = int(self.beliefs['alpha'][market_env.public_variables['product_dict'][selected_product]] * self.beliefs['budget'] / self.beliefs['product_prices'][company][selected_product])
                 companies.append(company)
                 quantities.append(quantity)
 
-            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {cheapest_companies}")
+            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {companies}")
+            return selected_products,companies, quantities
+
+
+    def buy_products_but_think_about_it(self):
+            available_products = set()
+            for branch in self.beliefs['product_prices']:
+                available_products = available_products.union(set(self.beliefs['product_prices'][branch]))
+
+            if not available_products:
+                logging.warning(f"{self.name} found no available products to buy.")
+                return [], [], [], []
+
+            selected_products = list(available_products)
+
+            companies = []
+            quantities = []
+
+            for selected_product in selected_products:
+
+                comp=[x for x in self.beliefs['product_prices'] if selected_product in self.beliefs['product_prices'][x]]
+                popularity_mean=np.mean([self.beliefs['company_popularity'][x] for x in comp])
+                most_populars=[x for x in comp if self.beliefs['company_popularity'][x]>=popularity_mean]
+
+                cheapest_comp=None
+                cheapest_price=float('inf')
+
+                for company in most_populars:
+                    if self.beliefs['product_prices'][company][selected_product]<cheapest_price:
+                        cheapest_price=self.beliefs['product_prices'][company][selected_product]
+                        cheapest_comp=company
+
+                quantity = int(self.beliefs['alpha'][market_env.public_variables['product_dict'][selected_product]] * self.beliefs['budget'] / cheapest_price)
+                companies.append(cheapest_comp)
+                quantities.append(quantity)
+
+            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {companies}")
             return selected_products,companies, quantities

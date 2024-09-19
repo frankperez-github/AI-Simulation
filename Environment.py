@@ -13,7 +13,7 @@ class MarketEnvironment:
             'competition_levels': {},
             'market_trends': {},
             'revenue': {},
-            'company_popularity': {},
+            'company_popularity': {'A':1,'B':1,'C':1},
             'dollar_behavior': 0,
             'product_dict':{}
         }
