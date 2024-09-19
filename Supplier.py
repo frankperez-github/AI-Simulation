@@ -8,10 +8,21 @@ logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='
 
 
 class SupplierAgent(BDI_Agent):
+    def __init__(self, name):
+        super().__init__(name)
+        self.initialize_supplier()
+    
+    def initialize_supplier(self):
+        market_env.hidden_variables['supplier_conditions'][self.name] = {
+                'product_1': {'quantity': 100, 'min_price': 5.0},
+                'product_2': {'quantity': 200, 'min_price': 10.0}
+        }
+
     def perceive_environment(self):
         # Update beliefs about market demand and available products
         self.beliefs['market_demand'] = market_env.public_variables['market_demand']
         self.beliefs['available_products'] = market_env.public_variables['available_products']
+        self.beliefs['supplier_conditions'] = market_env.hidden_variables['supplier_conditions'].get(self.name, {})
         logging.info(f"{self.name} has perceived the environment and updated beliefs about market demand and available products.")
 
     def form_desires(self):
@@ -32,24 +43,28 @@ class SupplierAgent(BDI_Agent):
         logging.info(f"{self.name} has executed the intention to {intention}.")
 
     def supply_products(self):
-        for product, demand in self.beliefs['market_demand'].items():
-            if demand > 0:
-                supply_quantity = demand + 10  # Supply demand
-                market_env.public_variables['market_demand'][product] = 0
-                self.update_stock(product, supply_quantity)
-                logging.info(f"{self.name} has supplied {supply_quantity} units of {product} based on demand.")
-            else:
-                if random.random() < 0.3:  # 30% chance to supply the product
-                    supply_quantity = random.randint(1, 20)  # Supply between 1 and 20 items of the product
-                    self.update_stock(product, supply_quantity)
-                    logging.info(f"{self.name} has supplied {supply_quantity} units of {product} without market demand.")
+        for product, demand in market_env.public_variables['market_demand'].items():
+            supplier_data = market_env.hidden_variables['supplier_conditions'][self.name].get(product, None)
 
-            # Update market trend (increase trend for the product if supplied)
-            if product in market_env.public_variables['market_trends']:
-                market_env.public_variables['market_trends'][product] += 1
+            if supplier_data and supplier_data['quantity'] > 0:
+                # Determine the supply quantity based on demand or random chance
+                supply_quantity = min(demand + 10, supplier_data['quantity']) if demand > 0 else random.randint(1, supplier_data['quantity'])
+                
+                # Check if supply meets the minimum price requirement
+                market_price = market_env.public_variables['product_prices'].get(self.name, {}).get(product, 0)
+                if market_price >= supplier_data['min_price']:
+                    # Update market demand and supply stock
+                    market_env.public_variables['market_demand'][product] = max(0, demand - supply_quantity)
+                    self.update_stock(product, supply_quantity)
+                    
+                    # Update supplier stock
+                    market_env.hidden_variables['supplier_conditions'][self.name][product]['quantity'] -= supply_quantity
+                    logging.info(f"{self.name} has supplied {supply_quantity} units of {product} at price {market_price} (min price: {supplier_data['min_price']}).")
+                
+                else:
+                    logging.info(f"{self.name} could not supply {product} as the market price {market_price} is below the minimum price {supplier_data['min_price']}.")
             else:
-                market_env.public_variables['market_trends'][product] = 1
-            logging.info(f"{self.name} has updated the market trend for {product}.")
+                logging.info(f"{self.name} has no stock or data for {product}.")
 
     def update_stock(self, product, quantity):
         # Update the inventory in the environment
@@ -58,3 +73,12 @@ class SupplierAgent(BDI_Agent):
         else:
             market_env.public_variables['available_products'][product] = quantity
         logging.info(f"{self.name} has updated the stock of {product}. New quantity: {market_env.public_variables['available_products'][product]}")
+
+    def update_stock(self, product, quantity):
+        # Update the inventory in the environment
+        if product in market_env.public_variables['available_products']:
+            market_env.public_variables['available_products'][product] += quantity
+        else:
+            market_env.public_variables['available_products'][product] = quantity
+        logging.info(f"{self.name} has updated the stock of {product}. New quantity: {market_env.public_variables['available_products'][product]}")
+

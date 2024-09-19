@@ -64,7 +64,7 @@ def run_simulation(agents, market_env, steps=30):
 # Configuración de clientes (hogares)
 Customers = []
 for i in range(n_households):
-    Customers.append(CustomerAgent("Cliente" + str(i), market_env))
+    Customers.append(CustomerAgent("Cliente" + str(i)))
 
 Customers = distribute_budgets(Customers, initial_min_budget, initial_mean_budget)
 Customers = classify_quintiles(Customers)
@@ -72,10 +72,10 @@ Customers = assign_alpha(Customers, count_products, mean_alpha_quintiles, sd_alp
 Customers = calculate_demand_utility(Customers, base_price, count_products)
 
 agents = [
-    CompanyAgent("A", market_env),
-    CompanyAgent("B", market_env),
-    CompanyAgent("C", market_env),
-    SupplierAgent("Suministrador1", market_env)
+    CompanyAgent("A"),
+    CompanyAgent("B"),
+    CompanyAgent("C"),
+    SupplierAgent("Suministrador1")
 ]
 agents += Customers
 

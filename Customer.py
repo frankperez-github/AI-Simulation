@@ -7,8 +7,8 @@ from Environment import market_env
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CustomerAgent(BDI_Agent):
-    def __init__(self, name, market_env):
-        super().__init__(name, market_env)
+    def __init__(self, name):
+        super().__init__(name)
         self.beliefs['budget'] = 0
         self.beliefs['quintil'] = -1
         self.beliefs['alpha'] = {}

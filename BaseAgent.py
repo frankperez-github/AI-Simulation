@@ -1,7 +1,6 @@
 class BDI_Agent:
-    def __init__(self, name, market_env):
+    def __init__(self, name):
         self.name = name
-        self.market_env = market_env
         self.beliefs = {}
         self.desires = {}
         self.intentions = []
