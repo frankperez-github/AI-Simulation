@@ -3,9 +3,7 @@ import logging
 from BaseAgent import BDI_Agent
 from Environment import market_env
 
-# Configurar el logger para que solo muestre el mensaje
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
-
 
 class SupplierAgent(BDI_Agent):
     def __init__(self, name):
