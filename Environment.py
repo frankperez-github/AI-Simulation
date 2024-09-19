@@ -16,7 +16,7 @@ class MarketEnvironment:
             'company_popularity': {},
             'dollar_behavior': 0,
             'product_dict':{},
-            'subproducts': {}  # New variable to hold subproducts
+            'subproducts': {}
         }
 
         self.hidden_variables = {
@@ -58,14 +58,13 @@ class MarketEnvironment:
                 product_competition[product] = set()
             product_competition[product].add(branch)
 
-        # Add subproducts for each product
         for product in unique_products:
-            # Each product needs a set of subproducts to be produced
-            subproducts = [f"subproduct_{i}" for i in range(random.randint(1, 4))]
+            subproducts = {f"subproduct_{i}": random.randint(1, 5) for i in range(random.randint(1, 4))}
             self.public_variables['subproducts'][product] = subproducts
 
         for product, branches in product_competition.items():
             self.public_variables['competition_levels'][product] = len(branches)
+
     def initialize_market_variables(self):
         product_lines = self.public_variables['available_products'].keys()
         for product in product_lines:
