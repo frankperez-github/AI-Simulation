@@ -52,14 +52,14 @@ def classify_quintiles(households):
     return households
 
 # Asignación de parámetros Cobb-Douglas (alpha y beta)
-def assign_alpha(households,count_prodcuts,mean_alpha_quintiles,sd_alpha):
-    for i in range(count_prodcuts):
+def assign_alpha(households,products,mean_alpha_quintiles,sd_alpha):
+    for i in range(len(products)):
         for quintile in range(5):
             mean_alpha = mean_alpha_quintiles[i][quintile]
             for household in households:
                 if household.beliefs['quintil']==quintile:
-                    household.beliefs['alpha'][i]= np.random.normal(mean_alpha,sd_alpha[i])
-                    if household.beliefs['alpha'][i] <=0: household.beliefs['alpha'][i]=0.001
+                    household.beliefs['alpha'][products[i]]= np.random.normal(mean_alpha,sd_alpha[i])
+                    if household.beliefs['alpha'][products[i]] <=0: household.beliefs['alpha'][products[i]]=0
     return households
 
 # Cálculo de demanda y utilidad para un bien A
