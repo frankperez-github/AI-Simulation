@@ -75,10 +75,10 @@ Customers = assign_alpha(Customers, count_products, mean_alpha_quintiles, sd_alp
 #Customers = calculate_demand_utility(Customers, base_price, count_products)
 
 agents = [
-    CompanyAgent("A", market_env),
-    CompanyAgent("B", market_env),
-    CompanyAgent("C", market_env),
-    SupplierAgent("Suministrador1", market_env)
+    CompanyAgent("A"),
+    CompanyAgent("B"),
+    CompanyAgent("C"),
+    SupplierAgent("Suministrador1")
 ]
 agents += Customers
 
