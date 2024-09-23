@@ -10,13 +10,10 @@ logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='
 class CustomerAgent(BDI_Agent):
     def __init__(self, name, actitud):
         super().__init__(name)
-        self.beliefs['attitude'] = actitud
-        self.beliefs['budget'] = 0
-        self.beliefs['quintil'] = -1
-        self.beliefs['alpha'] = {}
-        self.beliefs['demand'] = {}
-        self.beliefs['expenditure'] = {}
-        self.beliefs['utility'] = {}
+        self.attitude = actitud
+        self.alpha = {}
+        self.budget = 0
+        self.quintil = -1
 
 
     def perceive_environment(self,market_env:MarketEnvironment):
@@ -25,29 +22,45 @@ class CustomerAgent(BDI_Agent):
         logging.info(f"{self.name} has perceived the environment and updated beliefs about available products and prices.")
 
     def form_desires(self):
-        self.desires['buy_products'] = [product for product in self.beliefs['alpha'] if self.beliefs['alpha'][product]>0]
-        logging.info(f"{self.name} formed the desire to buy products: {self.desires['buy_products']}")
+        self.desires.append('buy_products')
+        #self.desires['buy_products'] = [product for product in self.beliefs['alpha'] if self.beliefs['alpha'][product]>0]
+        logging.info(f"{self.name} formed the desire to buy products")
 
     def plan_intentions(self):
-        self.intentions={}
-        if self.beliefs['attitude']=='stingy':
-            self.intentions['buy_products']=self.buy_cheapest_products(self.desires['buy_products'])
-            logging.info(f"{self.name} planned the intention to buy the cheapest products.")
-        elif self.beliefs['attitude']=='populist':
-            self.intentions['buy_products']=self.buy_products_by_popularity(self.desires['buy_products'])                        
-        elif self.beliefs['attitude']=='random':
-            self.intentions['buy_products']=self.buy_products_randomly(self.desires['buy_products'])
-            logging.info(f"{self.name} planned the intention to buy products randomly.") 
-        elif self.beliefs['attitude']=='cautious':
-            self.intentions['buy_products']=self.buy_products_but_think_about_it(self.desires['buy_products'])
-            logging.info(f"{self.name} planned the intention to buy products.")  
+        for desire in self.desires:
+            if desire == 'buy_products':
+                if self.attitude == 'stingy':
+                    self.intentions.append('buy_cheapest_products')
+                    logging.info(f"{self.name} planned the intention to buy the cheapest products.")
+                elif self.attitude == 'populist':
+                    self.intentions.append('buy_products_by_popularity')
+                    logging.info(f"{self.name} planned the intention to buy the most populars products.")
+                elif self.attitude == 'random':
+                    self.intentions.append('buy_products_randomly')
+                    logging.info(f"{self.name} planned the intention to buy products randomly.") 
+                elif self.attitude == 'cautious':
+                    self.intentions.append('buy_products_but_think_about_it')
+                    logging.info(f"{self.name} planned the intention to buy products but thinking.")
+        self.desires.clear()
+          
    
-    def execute_intention(self, intention,market_env):
-        selected_products, companies, quantities = self.intentions[intention]
-        logging.info(f"{self.name} will execute the intention: {self.intentions[intention]}")
-        self.buy(selected_products, companies, quantities,market_env)
+    def execute_intention(self, intention, market_env):
+        logging.info(f"{self.name} will execute the intention: {intention}")
+        products = [product for product in self.alpha if self.alpha[product]>0]
+        if intention == 'buy_cheapest_products':
+            selected_products, companies, quantities = self.buy_cheapest_products(products)
+            self.buy(selected_products, companies, quantities,market_env)
+        elif intention == 'buy_products_by_popularity':
+            selected_products, companies, quantities = self.buy_products_by_popularity(products)
+            self.buy(selected_products, companies, quantities,market_env)
+        elif intention == 'buy_products_randomly':
+            selected_products, companies, quantities = self.buy_products_randomly(products)
+            self.buy(selected_products, companies, quantities,market_env)
+        elif intention == 'buy_products_but_think_about_it':
+            selected_products, companies, quantities = self.buy_products_but_think_about_it(products)
+            self.buy(selected_products, companies, quantities,market_env)
         # Remover la intención ejecutada
-        self.intentions[intention]=[]
+        self.intentions.remove(intention)
 
     def buy(self, selected_products, cheapest_companies, quantities,market_env:MarketEnvironment):
         for i in range(len(selected_products)):
@@ -87,7 +100,7 @@ class CustomerAgent(BDI_Agent):
                         cheapest_price = price
                         cheapest_company = company
 
-            quantity = int(self.beliefs['alpha'][selected_product] * self.beliefs['budget'] / cheapest_price)
+            quantity = int(self.alpha[selected_product] * self.budget / cheapest_price)
             cheapest_companies.append(cheapest_company)
             quantities.append(quantity)
 
@@ -108,7 +121,7 @@ class CustomerAgent(BDI_Agent):
             
             for selected_product in selected_products:
                 if selected_product in self.beliefs['product_prices'][popular_company]:
-                    quantity = int(self.beliefs['alpha'][selected_product] * self.beliefs['budget'] / self.beliefs['product_prices'][popular_company][selected_product]['price'])
+                    quantity = int(self.alpha[selected_product] * self.budget / self.beliefs['product_prices'][popular_company][selected_product]['price'])
                     populars_companies.append(popular_company)
                     quantities.append(quantity)
             
@@ -124,7 +137,7 @@ class CustomerAgent(BDI_Agent):
 
                 comp=[x for x in self.beliefs['product_prices'] if selected_product in self.beliefs['product_prices'][x]]
                 company=random.choice(comp)
-                quantity = int(self.beliefs['alpha'][selected_product] * self.beliefs['budget'] / self.beliefs['product_prices'][company][selected_product]['price'])
+                quantity = int(self.alpha[selected_product] * self.budget / self.beliefs['product_prices'][company][selected_product]['price'])
                 companies.append(company)
                 quantities.append(quantity)
 
@@ -151,7 +164,7 @@ class CustomerAgent(BDI_Agent):
                         cheapest_price=self.beliefs['product_prices'][company][selected_product]['price']
                         cheapest_comp=company
 
-                quantity = int(self.beliefs['alpha'][selected_product] * self.beliefs['budget'] / cheapest_price)
+                quantity = int(self.alpha[selected_product] * self.budget / cheapest_price)
                 companies.append(cheapest_comp)
                 quantities.append(quantity)
 

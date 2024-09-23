@@ -14,7 +14,7 @@ def distribute_budgets(households, initial_min_budget, mean_budget):
 
     # Asignar los presupuestos a los hogares
     for i, household in enumerate(households):
-        household.beliefs['budget'] = budgets[i]
+        household.budget = budgets[i]
     
     return households
 
@@ -44,11 +44,11 @@ def calculate_p90_p10(households):
 
 # Clasificación de los hogares en quintiles
 def classify_quintiles(households):
-    budgets = sorted([household.beliefs['budget'] for household in households])
+    budgets = sorted([household.budget for household in households])
     quintiles = np.percentile(budgets, [20, 40, 60, 80])
-    quintile_groups = np.digitize([household.beliefs['budget'] for household in households], quintiles)
+    quintile_groups = np.digitize([household.budget for household in households], quintiles)
     for i in range(len(households)):
-        households[i].beliefs['quintil']=quintile_groups[i]
+        households[i].quintil = quintile_groups[i]
     return households
 
 # Asignación de parámetros Cobb-Douglas (alpha y beta)
@@ -57,18 +57,9 @@ def assign_alpha(households,products,mean_alpha_quintiles,sd_alpha):
         for quintile in range(5):
             mean_alpha = mean_alpha_quintiles[i][quintile]
             for household in households:
-                if household.beliefs['quintil']==quintile:
-                    household.beliefs['alpha'][products[i]]= np.random.normal(mean_alpha,sd_alpha[i])
-                    if household.beliefs['alpha'][products[i]] <=0: household.beliefs['alpha'][products[i]]=0
+                if household.quintil == quintile:
+                    household.alpha[products[i]]= np.random.normal(mean_alpha,sd_alpha[i])
+                    if household.alpha[products[i]] <=0: household.alpha[products[i]]=0
     return households
 
-# Cálculo de demanda y utilidad para un bien A
-def calculate_demand_utility(households, price,count_products):
-    households_new_price= deepcopy(households)
-    for i in range(count_products):
-        for household in households_new_price:
-            household.beliefs['demand'][i] = household.beliefs['budget'] * household.beliefs['alpha'][i] / price[i]
-            household.beliefs['expenditure'][i] = household.beliefs['demand'][i] * price[i]
-            household.beliefs['utility'][i] = (household.beliefs['demand'][i] ** household.beliefs['alpha'][i]) * ((household.beliefs['budget'] - household.beliefs['expenditure'][i]) ** (1 - household.beliefs['alpha'][i]))
-    return households_new_price
 
