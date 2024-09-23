@@ -2,7 +2,7 @@ class BDI_Agent:
     def __init__(self, name):
         self.name = name
         self.beliefs = {}
-        self.desires = {}
+        self.desires = []
         self.intentions = []
 
     def perceive_environment(self):

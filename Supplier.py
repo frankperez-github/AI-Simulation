@@ -2,6 +2,13 @@ import random
 import logging
 from BaseAgent import BDI_Agent
 from Environment import MarketEnvironment
+import json
+ 
+des_int_json_file = open('./Desires-Intentions/Suppliers.json',)
+int_exec_json_file = open('./Intentions-Execution/Suppliers.json',)
+
+desires_intentions = json.load(des_int_json_file)
+intentions_execution = json.load(int_exec_json_file)
 
 
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
@@ -28,19 +35,22 @@ class SupplierAgent(BDI_Agent):
         logging.info(f"{self.name} has perceived the environment and updated beliefs about market demand and available products.")
 
     def form_desires(self):
-        self.desires['supply_products'] = random.choice([True, False])
-        logging.info(f"{self.name} has formed desires. Supply products: {self.desires['supply_products']}")
+        supply = random.choice([True, False]) 
+        if supply:
+            self.desires.append('supply_products')
+        logging.info(f"{self.name} has formed desires. Supply products: {supply}")
 
     def plan_intentions(self):
-        if self.desires.get('supply_products'):
-            self.intentions.append('supply_to_companies')
-            logging.info(f"{self.name} has planned to supply products to companies.")
+        for desire in self.desires:
+            self.intentions += desires_intentions[desire]
+            logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
 
-    def execute_intention(self, intention,market_env):
-        if intention == 'supply_to_companies':
-            self.supply_products(market_env)
-        self.intentions.remove(intention)
-        logging.info(f"{self.name} has executed the intention to {intention}.")
+    def execute_intention(self, intention, market_env):
+        for intention in self.intentions:
+            execution = intentions_execution[intention]
+            eval(execution["action"])
+            self.intentions.remove(intention)
+            logging.info(execution["log"])
 
     def supply_products(self, market_env: MarketEnvironment):
         for company in self.beliefs['product_prices']:

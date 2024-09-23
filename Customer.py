@@ -8,16 +8,15 @@ from Environment import MarketEnvironment
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CustomerAgent(BDI_Agent):
-    def __init__(self, name,actitud):
+    def __init__(self, name, actitud):
         super().__init__(name)
-        self.beliefs['attitude']=actitud
+        self.beliefs['attitude'] = actitud
         self.beliefs['budget'] = 0
         self.beliefs['quintil'] = -1
         self.beliefs['alpha'] = {}
         self.beliefs['demand'] = {}
         self.beliefs['expenditure'] = {}
         self.beliefs['utility'] = {}
-
 
 
     def perceive_environment(self,market_env:MarketEnvironment):

@@ -1,5 +1,13 @@
 import logging
 from BaseAgent import BDI_Agent
+import json
+
+des_int_json_file = open('./Desires-Intentions/Companies.json',)
+int_exec_json_file = open('./Intentions-Execution/Companies.json',)
+
+desires_intentions = json.load(des_int_json_file)
+intentions_execution = json.load(int_exec_json_file)
+
 
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
@@ -26,38 +34,27 @@ class CompanyAgent(BDI_Agent):
             subproducts_needed = self.beliefs['subproducts'].get(product, {})
 
             if stock == 0:
-                self.desires['maximize_profit'] = True
+                self.desires.append('maximize_profit')
                 logging.info(f"{self.name} formed desire to maximize profit for {product}.")
             else:
-                self.desires['expand_market_share'] = True
+                self.desires.append('expand_market_share')
                 logging.info(f"{self.name} formed desire to expand market share for {product}.")
 
             if subproducts_needed:
-                self.desires['secure_subproducts'] = True
+                self.desires.append('secure_subproducts')
                 logging.info(f"{self.name} formed desire to secure subproducts for {product}.")
     
     def plan_intentions(self):
-        if self.desires.get('maximize_profit'):
-            self.intentions.append('increase_prices')
-            logging.info(f"{self.name} planned to increase prices.")
-        if self.desires.get('expand_market_share'):
-            self.intentions.append('lower_prices')
-            logging.info(f"{self.name} planned to lower prices.")
-        if self.desires.get('secure_subproducts'):
-            self.intentions.append('secure_subproduct_supply')
-            logging.info(f"{self.name} planned to secure subproduct supply.")
+        for desire in self.desires:
+            self.intentions += desires_intentions[desire]
+            logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
 
-    def execute_intention(self, intention,market_env):
-        if intention == 'increase_prices':
-            self.adjust_price(0.1,market_env)
-            logging.info(f"{self.name} executed intention to increase prices.")
-        elif intention == 'lower_prices':
-            self.adjust_price(-0.1,market_env)
-            logging.info(f"{self.name} executed intention to lower prices.")
-        elif intention == 'secure_subproduct_supply':
-            self.secure_subproduct_supply()
-            logging.info(f"{self.name} executed intention to secure subproduct supply.")
-        self.intentions.remove(intention)
+    def execute_intention(self, intention, market_env):
+        for intention in self.intentions:
+            execution = intentions_execution[intention]
+            eval(execution["action"])
+            self.intentions.remove(intention)
+            logging.info(execution["log"])
 
     def adjust_price(self, adjustment,market_env):
         for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():

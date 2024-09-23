@@ -1,0 +1,5 @@
+{
+    "maximize_profit": ["increase_prices"],
+    "expand_market_share": ["lower_prices"],
+    "secure_subproducts": ["secure_subproduct_supply"]
+}
