@@ -6,7 +6,7 @@ from Environment import MarketEnvironment
 from Company import CompanyAgent
 from Customer import CustomerAgent
 from Supplier import SupplierAgent
-from utils import distribute_budgets, classify_quintiles, assign_alpha, calculate_demand_utility
+from utils import distribute_budgets, classify_quintiles, assign_alpha
 
 log_file_path = os.path.join(os.getcwd(), 'simulation_logs.log')
 
