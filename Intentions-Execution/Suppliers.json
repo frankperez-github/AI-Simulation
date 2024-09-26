@@ -1,6 +1,6 @@
 {
     "supply_to_companies": {
-        "action": "self.supply_products(market_env)",
+        "actions": ["self.supply_products(market_env)"],
         "log": "f'{self.name} has executed the intention to {intention}.'"
     }
 }

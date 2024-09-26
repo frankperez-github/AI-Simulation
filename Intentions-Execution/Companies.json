@@ -1,14 +1,14 @@
 {
     "increase_prices":{
-        "action": "self.adjust_price(0.1,market_env)",
-        "log": "{self.name} executed intention to increase prices."
+        "actions": ["self.adjust_price(0.1,market_env)"],
+        "log": "f'{self.name} executed intention to increase prices.'"
     } ,
     "lower_prices":{
-        "action": "self.adjust_price(-0.1,market_env)",
-        "log": "{self.name} executed intention to lower prices."
+        "actions": ["self.adjust_price(-0.1,market_env)"],
+        "log": "f'{self.name} executed intention to lower prices.'"
     },
     "secure_subproduct_supply":{
-        "action": "self.secure_subproduct_supply()",
-        "log": "{self.name} executed intention to secure subproduct supply."
+        "actions": ["self.secure_subproduct_supply()"],
+        "log": "f'{self.name} executed intention to secure subproduct supply.'"
     }
 }

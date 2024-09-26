@@ -1,0 +1,18 @@
+{
+    "buy_cheapest_products":{
+        "actions": ["selected_products, companies, quantities = self.buy_cheapest_products(products)", "self.buy(selected_products, companies, quantities,market_env)"],
+        "log": "f'{self.name} has excecuted the intention {intention}'"
+    },
+    "buy_products_by_popularity":{
+        "actions": ["selected_products, companies, quantities = self.buy_products_by_popularity(products)", "self.buy(selected_products, companies, quantities,market_env)"],
+        "log": "f'{self.name} has excecuted the intention {intention}'"
+    },
+    "buy_products_randomly":{
+        "actions": ["selected_products, companies, quantities = self.buy_products_randomly(products)", "self.buy(selected_products, companies, quantities,market_env)"],
+        "log": "f'{self.name} has excecuted the intention {intention}'"
+    },
+    "buy_products_but_think_about_it":{
+        "actions": ["selected_products, companies, quantities = self.buy_products_but_think_about_it(products)", "self.buy(selected_products, companies, quantities,market_env)"],
+        "log": "f'{self.name} has excecuted the intention {intention}'"
+    }
+}

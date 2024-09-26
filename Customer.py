@@ -3,8 +3,15 @@ import logging
 from BaseAgent import BDI_Agent
 import numpy as np
 from Environment import MarketEnvironment
+import json
 
-# Configurar el logger para mostrar solo mensajes
+des_int_json_file = open('./Desires-Intentions/Customers.json',)
+int_exec_json_file = open('./Intentions-Execution/Customers.json',)
+
+desires_intentions = json.load(des_int_json_file)
+intentions_execution = json.load(int_exec_json_file)
+
+
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CustomerAgent(BDI_Agent):
@@ -23,44 +30,22 @@ class CustomerAgent(BDI_Agent):
 
     def form_desires(self):
         self.desires.append('buy_products')
-        #self.desires['buy_products'] = [product for product in self.beliefs['alpha'] if self.beliefs['alpha'][product]>0]
         logging.info(f"{self.name} formed the desire to buy products")
 
     def plan_intentions(self):
         for desire in self.desires:
-            if desire == 'buy_products':
-                if self.attitude == 'stingy':
-                    self.intentions.append('buy_cheapest_products')
-                    logging.info(f"{self.name} planned the intention to buy the cheapest products.")
-                elif self.attitude == 'populist':
-                    self.intentions.append('buy_products_by_popularity')
-                    logging.info(f"{self.name} planned the intention to buy the most populars products.")
-                elif self.attitude == 'random':
-                    self.intentions.append('buy_products_randomly')
-                    logging.info(f"{self.name} planned the intention to buy products randomly.") 
-                elif self.attitude == 'cautious':
-                    self.intentions.append('buy_products_but_think_about_it')
-                    logging.info(f"{self.name} planned the intention to buy products but thinking.")
-        self.desires.clear()
-          
-   
+            intention = desires_intentions[f"{desire}_{self.attitude}"]
+            self.intentions.append(intention)
+            logging.info(f"{self.name} planned the intention to {intention}")
+
     def execute_intention(self, intention, market_env):
         logging.info(f"{self.name} will execute the intention: {intention}")
         products = [product for product in self.alpha if self.alpha[product]>0]
-        if intention == 'buy_cheapest_products':
-            selected_products, companies, quantities = self.buy_cheapest_products(products)
-            self.buy(selected_products, companies, quantities,market_env)
-        elif intention == 'buy_products_by_popularity':
-            selected_products, companies, quantities = self.buy_products_by_popularity(products)
-            self.buy(selected_products, companies, quantities,market_env)
-        elif intention == 'buy_products_randomly':
-            selected_products, companies, quantities = self.buy_products_randomly(products)
-            self.buy(selected_products, companies, quantities,market_env)
-        elif intention == 'buy_products_but_think_about_it':
-            selected_products, companies, quantities = self.buy_products_but_think_about_it(products)
-            self.buy(selected_products, companies, quantities,market_env)
-        # Remover la intención ejecutada
+        execution = intentions_execution[intention]
+        for action in execution["actions"]:
+            exec(action)
         self.intentions.remove(intention)
+        logging.info(execution["log"])
 
     def buy(self, selected_products, cheapest_companies, quantities,market_env:MarketEnvironment):
         for i in range(len(selected_products)):

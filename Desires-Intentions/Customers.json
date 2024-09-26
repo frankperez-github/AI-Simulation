@@ -1,0 +1,6 @@
+{
+    "buy_products_stingy": "buy_cheapest_products",
+    "buy_products_populist": "buy_products_by_popularity",
+    "buy_products_random": "buy_products_randomly",
+    "buy_products_cautious": "buy_products_but_think_about_it"
+}
