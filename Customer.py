@@ -5,6 +5,7 @@ import numpy as np
 from Environment import MarketEnvironment
 import json
 
+
 des_int_json_file = open('./Desires-Intentions/Customers.json',)
 int_exec_json_file = open('./Intentions-Execution/Customers.json',)
 
@@ -26,6 +27,9 @@ class CustomerAgent(BDI_Agent):
     def perceive_environment(self,market_env:MarketEnvironment):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
         self.beliefs['company_popularity']=market_env.public_variables['company_popularity']
+        for company in self.beliefs['company_popularity']:
+            for product in self.beliefs['company_popularity'][company]:
+                self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
         logging.info(f"{self.name} has perceived the environment and updated beliefs about available products and prices.")
 
     def form_desires(self):
