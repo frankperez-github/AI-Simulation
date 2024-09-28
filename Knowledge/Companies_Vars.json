@@ -1,0 +1,5 @@
+{
+    "sales" : "ctrl.Antecedent(np.arange(0, 101, 1), 'sales')",
+    "popularity" : "ctrl.Antecedent(np.arange(0, 101, 1), 'popularity')",
+    "production" : "ctrl.Consequent(np.arange(0, 101, 1), 'production')"
+}
