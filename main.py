@@ -2,11 +2,16 @@ import logging
 import random
 import os
 import pandas as pd
-from Environment import market_env
+from Environment import MarketEnvironment
 from Company import CompanyAgent
 from Customer import CustomerAgent
 from Supplier import SupplierAgent
-from utils import distribute_budgets, classify_quintiles, assign_alpha, calculate_demand_utility
+from utils import distribute_budgets, classify_quintiles, assign_alpha
+from Company_Knowledge import Company_Knowledge
+
+companies_rules = './Knowledge/Companies_Rules.json'
+companies_functions = './Knowledge/Companies_Functions.json'
+companies_vars = './Knowledge/Companies_Vars.json'
 
 log_file_path = os.path.join(os.getcwd(), 'simulation_logs.log')
 
@@ -25,7 +30,7 @@ n_households = 10
 # Parámetros del modelo
 initial_min_budget = 600
 initial_mean_budget = 1500
-count_products = 6
+count_products = 3
 #base_price = {}
 #change_in_price_pct = {}
 mean_alpha_quintiles = {}
@@ -37,50 +42,121 @@ for i in range(count_products):
     sd_alpha[i] = 0.02
 
 def log_environment_data(market_env):
-    available_products_df = pd.DataFrame(list(market_env.public_variables['available_products'].items()), columns=['Product', 'Available Stock'])
+    #available_products_df = pd.DataFrame(list(market_env.public_variables['available_products'].items()), columns=['Product', 'Available Stock'])
     product_prices_df = pd.DataFrame([(company, product, price) for company, products in market_env.public_variables['product_prices'].items() for product, price in products.items()], columns=['Company', 'Product', 'Price'])
-    revenue_df = pd.DataFrame(list(market_env.public_variables['revenue'].items()), columns=['Company', 'Revenue'])
+    revenue=[]
+    for company in list(market_env.public_variables['companies'].values()):
+        for item in company.beliefs['revenue'].items():
+            revenue.append(tuple([company.name])+item)
+    revenue_df = pd.DataFrame(revenue, columns=['Company','Product', 'Revenue'])
+
+
 
     logging.info("\n----- Market Environment Data -----")
-    logging.info("\nAvailable Products (Stock):")
-    logging.info(available_products_df.to_string(index=False))
+    #logging.info("\nAvailable Products (Stock):")
+    #logging.info(available_products_df.to_string(index=False))
     logging.info("\nProduct Prices:")
     logging.info(product_prices_df.to_string(index=False))
     logging.info("\nCompany Revenue:")
     logging.info(revenue_df.to_string(index=False))
     logging.info("-----------------------------------\n")
 
+
+def run_simulation(market_env:MarketEnvironment, steps=30):
+    for step in range(steps):
+        logging.info(f"\n========== Day {step + 1} ==========")
+
+        for agent in list(market_env.public_variables['suppliers'].values()):
+            agent.perceive_environment(market_env)
+            agent.form_desires()
+            agent.plan_intentions()
+            agent.act(market_env)
+        for agent in list(market_env.public_variables['companies'].values()):
+            agent.perceive_environment(market_env)
+            agent.form_desires()
+            agent.plan_intentions()
+            agent.act(market_env)
+        for agent in list(market_env.public_variables['clients'].values()):
+            agent.perceive_environment(market_env)
+            agent.form_desires()
+            agent.plan_intentions()
+            agent.act(market_env)
+
+        #market_env.update_environment()
+
+        log_environment_data(market_env)
+
+
+'''
 def run_simulation(agents, market_env, steps=30):
     for step in range(steps):
         logging.info(f"\n========== Day {step + 1} ==========")
         for agent in agents:
-            agent.perceive_environment()
+            agent.perceive_environment(market_env)
             agent.form_desires()
             agent.plan_intentions()
-            agent.act()
-        market_env.update_environment()
+            agent.act(market_env)
+        #market_env.update_environment()
 
-        log_environment_data(market_env)
+        log_environment_data(market_env)'''
+
+
+products=["product1","product2","product3"]
+
 
 # Configuración de clientes (hogares)
 Customers = []
 for i in range(n_households):
-    actitudes=['tacanno','populista','precavido','random']
+    actitudes=['stingy','populist','cautious','random']
     actitud=random.choices(actitudes,[0.25,0.25,0.25,0.25])[0]
-    Customers.append(CustomerAgent("Cliente" + str(i), market_env,actitud))
+    Customers.append(CustomerAgent("Cliente" + str(i),actitud))
 
 Customers = distribute_budgets(Customers, initial_min_budget, initial_mean_budget)
 Customers = classify_quintiles(Customers)
-Customers = assign_alpha(Customers, count_products, mean_alpha_quintiles, sd_alpha)
+Customers = assign_alpha(Customers, products, mean_alpha_quintiles, sd_alpha)
 #Customers = calculate_demand_utility(Customers, base_price, count_products)
 
-agents = [
-    CompanyAgent("A"),
-    CompanyAgent("B"),
-    CompanyAgent("C"),
-    SupplierAgent("Suministrador1")
-]
-agents += Customers
+knowledge = Company_Knowledge(companies_rules,companies_functions, companies_vars)
+
+
+companies = {"A":CompanyAgent("A",knowledge),
+    "B":CompanyAgent("B", knowledge),
+    "C":CompanyAgent("C", knowledge)}
+
+product_supplier={
+               'product_1': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
+               'product_2': {'quantity': 200, 'min_price': 10.0, 'start_price':13},
+               'product_3': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
+       }
+
+suppliers = {
+    "Suministrador1": SupplierAgent("Suministrador1",product_supplier)
+}
+cust={}
+for customer in Customers:
+    cust[customer.name]=customer
+
+#agents=companies+suppliers+cust
+
+product_prices={
+    "A":{"product1":{"stock":100,"price":60},"product2":{"stock":100,"price":60},"product3":{"stock":100,"price":60}},
+    "B":{"product1":{"stock":100,"price":60},"product2":{"stock":100,"price":60},"product3":{"stock":100,"price":60}},
+    "C":{"product1":{"stock":100,"price":60},"product2":{"stock":100,"price":60},"product3":{"stock":100,"price":60}}
+}
+
+company_popularity={"A":{"product1": 1,"product2": 1,"product3": 1},
+                    "B":{"product1": 1,"product2": 1,"product3": 1},
+                    "C":{"product1": 1,"product2": 1,"product3": 1}}
+
+
+subproducts={"product1":{"product1":1},"product2":{"product2":1},"product3":{"product3":1}}
+subproduct_suppliers={"Suministrador1":["product1","product2","product3"]}
+
+
+
+
+market_env= MarketEnvironment(subproducts_suppliers=subproduct_suppliers,subproducts=subproducts,company_pop=company_popularity,companies=companies,suppliers=suppliers,clients=cust,product_prices=product_prices)
+
 
 # Ejecutar la simulación
-run_simulation(agents, market_env)
+run_simulation(market_env)
