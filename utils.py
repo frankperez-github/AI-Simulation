@@ -63,3 +63,6 @@ def assign_alpha(households,products,mean_alpha_quintiles,sd_alpha):
     return households
 
 
+def calculate_percent(total,part):
+    return part*100/total
+

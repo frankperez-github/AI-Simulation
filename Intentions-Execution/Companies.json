@@ -1,14 +1,28 @@
 {
-    "increase_prices":{
-        "actions": ["self.adjust_price(0.1,market_env)"],
-        "log": "f'{self.name} executed intention to increase prices.'"
+    "designate_budgets":{
+        "actions": "self.designate_budget()",
+        "log": "f'{self.name} executed intention to designate budgets.'"
     } ,
-    "lower_prices":{
-        "actions": ["self.adjust_price(-0.1,market_env)"],
+    "plan_investment":{
+        "actions": "self.plan_investment()",
+        "log": "f'{self.name} executed intention to plan investment.'"
+    },
+    "create_proposales":{
+        "actions": "self.initial_proposals()",
+        "log": "f'{self.name} executed intention to form initial proposals.'"
+    },
+     
+    "buy_subproducts":{
+        "actions": "self.adjust_price(-0.1,market_env)",
         "log": "f'{self.name} executed intention to lower prices.'"
     },
-    "secure_subproduct_supply":{
-        "actions": ["self.secure_subproduct_supply()"],
+    "adjust_prices":{
+        "actions": "self.secure_subproduct_supply()",
+        "log": "f'{self.name} executed intention to secure subproduct supply.'"
+    },
+
+    "produce":{
+        "actions": "self.secure_subproduct_supply()",
         "log": "f'{self.name} executed intention to secure subproduct supply.'"
     }
 }

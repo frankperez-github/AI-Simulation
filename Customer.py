@@ -97,18 +97,18 @@ class CustomerAgent(BDI_Agent):
             populars_companies = []
             quantities = []
 
-            popular_company = None
-            pop = float('inf')*-1
-            for company, popularity in self.beliefs['company_popularity'].items():
-                if popularity>pop:
-                    pop=popularity
-                    popular_company=company
-            
             for selected_product in selected_products:
-                if selected_product in self.beliefs['product_prices'][popular_company]:
-                    quantity = int(self.alpha[selected_product] * self.budget / self.beliefs['product_prices'][popular_company][selected_product]['price'])
-                    populars_companies.append(popular_company)
-                    quantities.append(quantity)
+                popular_company = None
+                pop = float('inf')*-1
+                for company in self.beliefs['company_popularity']:
+                    if selected_product in self.beliefs['company_popularity'][company]:
+                        popularity= self.beliefs['company_popularity'][company][selected_product]
+                        if popularity>pop:
+                            pop=popularity
+                            popular_company=company
+                quantity = int(self.alpha[selected_product] * self.budget / self.beliefs['product_prices'][popular_company][selected_product]['price'])
+                populars_companies.append(popular_company)
+                quantities.append(quantity)
             
             logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {populars_companies}")
             return [selected_products, populars_companies, quantities]
@@ -138,8 +138,7 @@ class CustomerAgent(BDI_Agent):
             for selected_product in selected_products:
 
                 comp=[x for x in self.beliefs['product_prices'] if selected_product in self.beliefs['product_prices'][x]]
-                popularity_mean=np.mean([self.beliefs['company_popularity'][x] for x in comp])
-                most_populars=[x for x in comp if self.beliefs['company_popularity'][x]>=popularity_mean]
+                most_populars=sorted(comp,key=lambda x: self.beliefs['company_popularity'][x][selected_product] ,reverse=True)[:3]
 
                 cheapest_comp=None
                 cheapest_price=float('inf')

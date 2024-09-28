@@ -7,6 +7,11 @@ from Company import CompanyAgent
 from Customer import CustomerAgent
 from Supplier import SupplierAgent
 from utils import distribute_budgets, classify_quintiles, assign_alpha
+from Company_Knowledge import Company_Knowledge
+
+companies_rules = './Knowledge/Companies_Rules.json'
+companies_functions = './Knowledge/Companies_Functions.json'
+companies_vars = './Knowledge/Companies_Vars.json'
 
 log_file_path = os.path.join(os.getcwd(), 'simulation_logs.log')
 
@@ -111,10 +116,12 @@ Customers = classify_quintiles(Customers)
 Customers = assign_alpha(Customers, products, mean_alpha_quintiles, sd_alpha)
 #Customers = calculate_demand_utility(Customers, base_price, count_products)
 
+knowledge = Company_Knowledge(companies_rules,companies_functions, companies_vars)
 
-companies = {"A":CompanyAgent("A"),
-    "B":CompanyAgent("B"),
-    "C":CompanyAgent("C")}
+
+companies = {"A":CompanyAgent("A",knowledge),
+    "B":CompanyAgent("B", knowledge),
+    "C":CompanyAgent("C", knowledge)}
 
 product_supplier={
                'product_1': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
@@ -137,7 +144,11 @@ product_prices={
     "C":{"product1":{"stock":100,"price":60},"product2":{"stock":100,"price":60},"product3":{"stock":100,"price":60}}
 }
 
-company_popularity={"A":1,"B":1,"C":1}
+company_popularity={"A":{"product1": 1,"product2": 1,"product3": 1},
+                    "B":{"product1": 1,"product2": 1,"product3": 1},
+                    "C":{"product1": 1,"product2": 1,"product3": 1}}
+
+
 subproducts={"product1":{"product1":1},"product2":{"product2":1},"product3":{"product3":1}}
 subproduct_suppliers={"Suministrador1":["product1","product2","product3"]}
 

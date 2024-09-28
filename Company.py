@@ -1,6 +1,7 @@
 import logging
 from BaseAgent import BDI_Agent
 import json
+from utils import calculate_percent
 
 des_int_json_file = open('./Desires-Intentions/Companies.json',)
 int_exec_json_file = open('./Intentions-Execution/Companies.json',)
@@ -12,52 +13,49 @@ intentions_execution = json.load(int_exec_json_file)
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CompanyAgent(BDI_Agent):
-    def __init__(self, name):
+    def __init__(self, name, knowledge):
         super().__init__(name)
         self.beliefs['revenue']={}
-        self.beliefs['subproduct_stock']={}
-
+        self.subproduct_stock ={}
+        self.product_stock = {}
+        self.product_budget = {}
+        self.knowledge = knowledge
+        self.r_offers = {}
+        self.s_offers = {}
+        self.agreements = {}
 
     def perceive_environment(self,market_env):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
         self.beliefs['subproducts'] = market_env.public_variables['subproducts']
         self.beliefs['subproduct_suppliers']=market_env.public_variables['subproduct_suppliers']
-        self.beliefs['r_offers']=[]
-        self.beliefs['s_offers']=[]
-        self.beliefs['agreements']=[]
+        
+        self.beliefs['company_popularity'] = market_env.public_variables['company_popularity']
 
         logging.info(f"{self.name} perceived the environment and updated beliefs.")
 
     def form_desires(self):
-        for product, _ in self.beliefs['product_prices'].get(self.name, {}).items():
-            stock = self.beliefs['product_prices'][self.name][product]['stock']
-            subproducts_needed = self.beliefs['subproducts'].get(product, {})
+        self.desires.append('manage_profit')
+        logging.info(f"{self.name} formed desire to manage_profit.")
+        self.desires.append('manage_production')
+        logging.info(f"{self.name} formed desire to manage_production.")
+        self.desires.append('manage_sales')
+        logging.info(f"{self.name} formed desire to manage_sales.")
 
-            if stock == 0:
-                self.desires.append('maximize_profit')
-                logging.info(f"{self.name} formed desire to maximize profit for {product}.")
-            else:
-                self.desires.append('expand_market_share')
-                logging.info(f"{self.name} formed desire to expand market share for {product}.")
-
-            if subproducts_needed:
-                self.desires.append('secure_subproducts')
-                logging.info(f"{self.name} formed desire to secure subproducts for {product}.")
     
     def plan_intentions(self):
         for desire in self.desires:
             self.intentions += desires_intentions[desire]
             logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
 
-    def execute_intention(self,intention, market_env):
+    def execute_intention(self, intention, market_env):
         execution = intentions_execution[intention]
-        for action in execution["actions"]:
-            eval(action)
+        eval(execution["actions"])
         self.intentions.remove(intention)
         logging.info(execution["log"])
 
-    def adjust_price(self, adjustment, market_env):
+    def adjust_price(self, adjustment,market_env):
         for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():
+            
             new_price = price['price'] * (1 + adjustment)
             market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
             logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
@@ -68,3 +66,29 @@ class CompanyAgent(BDI_Agent):
             for subproduct, quantity in subproducts.items():
                 logging.info(f"{self.name} is securing supply for {quantity} units of subproduct: {subproduct}.")
                 # Add logic to secure subproduct supply (negotiate with suppliers)
+    
+
+    def designate_budget(self):
+        for product, revenue in self.beliefs['revenue'].items():
+            self.product_budget[product] = revenue *4/5
+
+    def plan_investment(self):
+        for product in self.product_stock:
+            sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name]['product']['stock'])
+            popularity = self.beliefs['company_popularity'][self.name][product]
+            investment = self.knowledge.plan_investment(sales, popularity)
+            marketing = self.product_budget[product]*(100-investment)/100
+            #FUNCION PARA AUMENTAR MARKETING
+            self.product_budget[product] -= marketing
+
+    def initial_proposals(self):
+        for product in self.product_stock:
+            cost = 0
+            for sub_product in self.beliefs['subproducts'][product]:
+                cost += self.subproduct_stock[sub_product]['price']*self.beliefs['subproducts'][product][sub_product]
+            
+            units= int(self.product_budget[product]/cost)
+
+            for sub_product in self.beliefs['subproducts'][product]:
+                self.s_offers[sub_product]['units']=units*self.beliefs['subproducts'][product][sub_product]
+                self.s_offers[sub_product]['price']= self.subproduct_stock[sub_product]['price']

@@ -58,7 +58,7 @@ class SupplierAgent(BDI_Agent):
                 subproducts=self.beliefs['subproducts'][product]
                 for subproduct in subproducts:
                     if subproduct in self.beliefs['supplier_conditions']:
-                        market_env.public_variables['companies'][company].beliefs['subproduct_stock'][subproduct]+=100
+                        market_env.public_variables['companies'][company].subproduct_stock[subproduct]['stock']+=100
 '''
         for product, demand in market_env.public_variables['market_demand'].items():
             supplier_data = market_env.hidden_variables['supplier_conditions'][self.name].get(product, None)
