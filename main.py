@@ -71,11 +71,13 @@ def run_simulation(market_env:MarketEnvironment, steps=30):
             agent.form_desires()
             agent.plan_intentions()
             agent.act(market_env)
+
         for agent in list(market_env.public_variables['companies'].values()):
             agent.perceive_environment(market_env)
             agent.form_desires()
             agent.plan_intentions()
             agent.act(market_env)
+
         for agent in list(market_env.public_variables['clients'].values()):
             agent.perceive_environment(market_env)
             agent.form_desires()
@@ -85,20 +87,6 @@ def run_simulation(market_env:MarketEnvironment, steps=30):
         #market_env.update_environment()
 
         log_environment_data(market_env)
-
-
-'''
-def run_simulation(agents, market_env, steps=30):
-    for step in range(steps):
-        logging.info(f"\n========== Day {step + 1} ==========")
-        for agent in agents:
-            agent.perceive_environment(market_env)
-            agent.form_desires()
-            agent.plan_intentions()
-            agent.act(market_env)
-        #market_env.update_environment()
-
-        log_environment_data(market_env)'''
 
 
 products=["product1","product2","product3"]
@@ -139,14 +127,34 @@ for customer in Customers:
 #agents=companies+suppliers+cust
 
 product_prices={
-    "A":{"product1":{"stock":100,"price":60},"product2":{"stock":100,"price":60},"product3":{"stock":100,"price":60}},
-    "B":{"product1":{"stock":100,"price":60},"product2":{"stock":100,"price":60},"product3":{"stock":100,"price":60}},
-    "C":{"product1":{"stock":100,"price":60},"product2":{"stock":100,"price":60},"product3":{"stock":100,"price":60}}
+    "A":{
+            "product1":{"stock":100,"price":60},
+            "product2":{"stock":100,"price":60},
+            "product3":{"stock":100,"price":60}
+        },
+    "B":{
+            "product1":{"stock":100,"price":60},
+            "product2":{"stock":100,"price":60},
+            "product3":{"stock":100,"price":60}
+        },
+    "C":{
+            "product1":{"stock":100,"price":60},
+            "product2":{"stock":100,"price":60},
+            "product3":{"stock":100,"price":60}
+        }
 }
 
-company_popularity={"A":{"product1": 1,"product2": 1,"product3": 1},
-                    "B":{"product1": 1,"product2": 1,"product3": 1},
-                    "C":{"product1": 1,"product2": 1,"product3": 1}}
+company_popularity={
+        "A":{
+                "product1": 1,"product2": 1,"product3": 1
+            },
+        "B":{
+                "product1": 1,"product2": 1,"product3": 1
+            },
+        "C":{
+                "product1": 1,"product2": 1,"product3": 1
+            }
+    }
 
 
 subproducts={"product1":{"product1":1},"product2":{"product2":1},"product3":{"product3":1}}
@@ -155,8 +163,15 @@ subproduct_suppliers={"Suministrador1":["product1","product2","product3"]}
 
 
 
-market_env= MarketEnvironment(subproducts_suppliers=subproduct_suppliers,subproducts=subproducts,company_pop=company_popularity,companies=companies,suppliers=suppliers,clients=cust,product_prices=product_prices)
+market_env= MarketEnvironment(
+    subproducts_suppliers=subproduct_suppliers,
+    subproducts=subproducts,
+    company_pop=company_popularity,
+    companies=companies,
+    suppliers=suppliers,
+    clients=cust,
+    product_prices=product_prices
+)
 
 
-# Ejecutar la simulación
 run_simulation(market_env)

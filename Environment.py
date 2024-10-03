@@ -16,5 +16,3 @@ class MarketEnvironment:
 
         self.hidden_variables = {
         }
-
-

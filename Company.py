@@ -46,12 +46,13 @@ class CompanyAgent(BDI_Agent):
         for desire in self.desires:
             self.intentions += desires_intentions[desire]
             logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
+            self.desires.remove(desire)
 
     def execute_intention(self, intention, market_env):
         execution = intentions_execution[intention]
         eval(execution["actions"])
         self.intentions.remove(intention)
-        logging.info(execution["log"])
+        logging.info(eval(execution["log"]))
 
     def adjust_price(self, adjustment,market_env):
         for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():
