@@ -37,10 +37,12 @@ class CustomerAgent(BDI_Agent):
         logging.info(f"{self.name} formed the desire to buy products")
 
     def plan_intentions(self):
+        logging.info(self.desires)
         for desire in self.desires:
             intention = desires_intentions[f"{desire}_{self.attitude}"]
             self.intentions.append(intention)
             logging.info(f"{self.name} planned the intention to {intention}")
+            self.desires.remove(desire)
 
     def execute_intention(self, intention, market_env):
         logging.info(f"{self.name} will execute the intention: {intention}")
