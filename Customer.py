@@ -49,7 +49,7 @@ class CustomerAgent(BDI_Agent):
         for action in execution["actions"]:
             exec(action)
         self.intentions.remove(intention)
-        logging.info(execution["log"])
+        logging.info(eval(execution["log"]))
 
     def buy(self, selected_products, cheapest_companies, quantities,market_env:MarketEnvironment):
         for i in range(len(selected_products)):

@@ -50,7 +50,7 @@ class SupplierAgent(BDI_Agent):
         for action in execution["actions"]:
             eval(action)
         self.intentions.remove(intention)
-        logging.info(execution["log"])
+        logging.info(eval(execution["log"]))
 
     def supply_products(self, market_env: MarketEnvironment):
         for company in self.beliefs['product_prices']:

@@ -55,7 +55,7 @@ class CompanyAgent(BDI_Agent):
         execution = intentions_execution[intention]
         eval(execution["actions"])
         self.intentions.remove(intention)
-        logging.info(execution["log"])
+        logging.info(eval(execution["log"]))
 
     def adjust_price(self, adjustment,market_env):
         for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():
