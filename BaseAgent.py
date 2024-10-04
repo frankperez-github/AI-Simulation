@@ -17,6 +17,7 @@ class BDI_Agent:
     def act(self,market_env):
         for intention in self.intentions:
             self.execute_intention(intention,market_env)
-
+        self.intentions=[]
+            
     def execute_intention(self, intention):
         raise NotImplementedError("Este método debe ser implementado por las clases derivadas.")

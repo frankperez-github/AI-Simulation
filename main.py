@@ -2,6 +2,7 @@ import logging
 import random
 import os
 import pandas as pd
+from copy import deepcopy
 from Environment import MarketEnvironment
 from Company import CompanyAgent
 from Customer import CustomerAgent
@@ -46,7 +47,7 @@ def log_environment_data(market_env):
     product_prices_df = pd.DataFrame([(company, product, price) for company, products in market_env.public_variables['product_prices'].items() for product, price in products.items()], columns=['Company', 'Product', 'Price'])
     revenue=[]
     for company in list(market_env.public_variables['companies'].values()):
-        for item in company.beliefs['revenue'].items():
+        for item in company.revenue.items():
             revenue.append(tuple([company.name])+item)
     revenue_df = pd.DataFrame(revenue, columns=['Company','Product', 'Revenue'])
 
@@ -89,7 +90,7 @@ def run_simulation(market_env:MarketEnvironment, steps=30):
         log_environment_data(market_env)
 
 
-products=["product1","product2","product3"]
+products=["product_1","product_2","product_3"]
 
 
 # Configuración de clientes (hogares)
@@ -106,10 +107,22 @@ Customers = assign_alpha(Customers, products, mean_alpha_quintiles, sd_alpha)
 
 knowledge = Company_Knowledge(companies_rules,companies_functions, companies_vars)
 
+product_stock={
+    'product_1':200,'product_2':200,'product_3':200
+}
+revenue={
+    'product_1':6000,'product_2':6000,'product_3':6000
+}
+subproduct_stock={
+    "product_1":{"stock":0,"price":30},
+    "product_2":{"stock":0,"price":30},
+    "product_3":{"stock":0,"price":30}
+}
 
-companies = {"A":CompanyAgent("A",knowledge),
-    "B":CompanyAgent("B", knowledge),
-    "C":CompanyAgent("C", knowledge)}
+
+companies = {"A":CompanyAgent("A",knowledge, deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
+    "B":CompanyAgent("B", knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
+    "C":CompanyAgent("C", knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock))}
 
 product_supplier={
                'product_1': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
@@ -128,36 +141,36 @@ for customer in Customers:
 
 product_prices={
     "A":{
-            "product1":{"stock":100,"price":60},
-            "product2":{"stock":100,"price":60},
-            "product3":{"stock":100,"price":60}
+            "product_1":{"stock":100,"price":60},
+            "product_2":{"stock":100,"price":60},
+            "product_3":{"stock":100,"price":60}
         },
     "B":{
-            "product1":{"stock":100,"price":60},
-            "product2":{"stock":100,"price":60},
-            "product3":{"stock":100,"price":60}
+            "product_1":{"stock":100,"price":60},
+            "product_2":{"stock":100,"price":60},
+            "product_3":{"stock":100,"price":60}
         },
     "C":{
-            "product1":{"stock":100,"price":60},
-            "product2":{"stock":100,"price":60},
-            "product3":{"stock":100,"price":60}
+            "product_1":{"stock":100,"price":60},
+            "product_2":{"stock":100,"price":60},
+            "product_3":{"stock":100,"price":60}
         }
 }
 
 company_popularity={
         "A":{
-                "product1": 1,"product2": 1,"product3": 1
+                "product_1": 1,"product_2": 1,"product_3": 1
             },
         "B":{
-                "product1": 1,"product2": 1,"product3": 1
+                "product_1": 1,"product_2": 1,"product_3": 1
             },
         "C":{
-                "product1": 1,"product2": 1,"product3": 1
+                "product_1": 1,"product_2": 1,"product_3": 1
             }
     }
 
 
-subproducts={"product1":{"product1":1},"product2":{"product2":1},"product3":{"product3":1}}
+subproducts={"product_1":{"product_1":1},"product_2":{"product_2":1},"product_3":{"product_3":1}}
 subproduct_suppliers={"Suministrador1":["product1","product2","product3"]}
 
 

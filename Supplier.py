@@ -44,13 +44,12 @@ class SupplierAgent(BDI_Agent):
         for desire in self.desires:
             self.intentions += desires_intentions[desire]
             logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
-            self.desires.remove(desire)
+        self.desires=[]
 
     def execute_intention(self,intention, market_env):
         execution = intentions_execution[intention]
         for action in execution["actions"]:
             eval(action)
-        self.intentions.remove(intention)
         logging.info(eval(execution["log"]))
 
     def supply_products(self, market_env: MarketEnvironment):

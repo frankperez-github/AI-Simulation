@@ -14,11 +14,11 @@ intentions_execution = json.load(int_exec_json_file)
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CompanyAgent(BDI_Agent):
-    def __init__(self, name, knowledge):
+    def __init__(self, name, knowledge,revenue,subproduct_stock,product_stock):
         super().__init__(name)
-        self.beliefs['revenue']={}
-        self.subproduct_stock ={}
-        self.product_stock = {}
+        self.revenue=revenue
+        self.subproduct_stock =subproduct_stock
+        self.product_stock = product_stock
         self.product_budget = {}
         self.knowledge = knowledge
         self.r_offers = {}
@@ -33,8 +33,6 @@ class CompanyAgent(BDI_Agent):
         for company in self.beliefs['company_popularity']:
             for product in self.beliefs['company_popularity'][company]:
                 self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
-
-
         logging.info(f"{self.name} perceived the environment and updated beliefs.")
 
     def form_desires(self):
@@ -50,12 +48,11 @@ class CompanyAgent(BDI_Agent):
         for desire in self.desires:
             self.intentions += desires_intentions[desire]
             logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
-            self.desires.remove(desire)
+        self.desires=[]
 
     def execute_intention(self, intention, market_env):
         execution = intentions_execution[intention]
         eval(execution["actions"])
-        self.intentions.remove(intention)
         logging.info(eval(execution["log"]))
 
     def adjust_price(self, adjustment,market_env):
@@ -74,12 +71,12 @@ class CompanyAgent(BDI_Agent):
     
 
     def designate_budget(self):
-        for product, revenue in self.beliefs['revenue'].items():
+        for product, revenue in self.revenue.items():
             self.product_budget[product] = revenue *4/5
 
     def plan_investment(self):
         for product in self.product_stock:
-            sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name]['product']['stock'])
+            sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock'])
             popularity = self.beliefs['company_popularity'][self.name][product]
             investment = self.knowledge.plan_investment(sales, popularity)
             marketing = self.product_budget[product]*(100-investment)/100
@@ -95,5 +92,14 @@ class CompanyAgent(BDI_Agent):
             units= int(self.product_budget[product]/cost)
 
             for sub_product in self.beliefs['subproducts'][product]:
-                self.s_offers[sub_product]['units']=units*self.beliefs['subproducts'][product][sub_product]
-                self.s_offers[sub_product]['price']= self.subproduct_stock[sub_product]['price']
+                if sub_product in self.s_offers:
+                    self.s_offers[sub_product]['units']=units*self.beliefs['subproducts'][product][sub_product]
+                    self.s_offers[sub_product]['price']= self.subproduct_stock[sub_product]['price']
+                else:
+                    self.s_offers[sub_product]={}
+                    self.s_offers[sub_product]['units']=units*self.beliefs['subproducts'][product][sub_product]
+                    self.s_offers[sub_product]['price']= self.subproduct_stock[sub_product]['price']
+        print('-----------------')
+        print(self.name)
+        print(self.s_offers)   
+

@@ -42,7 +42,7 @@ class CustomerAgent(BDI_Agent):
             intention = desires_intentions[f"{desire}_{self.attitude}"]
             self.intentions.append(intention)
             logging.info(f"{self.name} planned the intention to {intention}")
-            self.desires.remove(desire)
+        self.desires=[]
 
     def execute_intention(self, intention, market_env):
         logging.info(f"{self.name} will execute the intention: {intention}")
@@ -50,7 +50,6 @@ class CustomerAgent(BDI_Agent):
         execution = intentions_execution[intention]
         for action in execution["actions"]:
             exec(action)
-        self.intentions.remove(intention)
         logging.info(eval(execution["log"]))
 
     def buy(self, selected_products, cheapest_companies, quantities,market_env:MarketEnvironment):
@@ -65,10 +64,10 @@ class CustomerAgent(BDI_Agent):
                         # Reduce stock
                         market_env.public_variables['companies'][cheapest_company].beliefs['product_prices'][cheapest_company][selected_product]['stock'] -= quantity
                         #Actualizar ganancia
-                        if selected_product in market_env.public_variables['companies'][cheapest_company].beliefs['revenue']:
-                            market_env.public_variables['companies'][cheapest_company].beliefs['revenue'][selected_product]+= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
+                        if selected_product in market_env.public_variables['companies'][cheapest_company].revenue:
+                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product]+= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
                         else:
-                            market_env.public_variables['companies'][cheapest_company].beliefs['revenue'][selected_product]= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
+                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product]= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
 
                         # Registrar la compra en el log
                         logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
@@ -78,10 +77,10 @@ class CustomerAgent(BDI_Agent):
                          # Reduce stock
                         market_env.public_variables['companies'][cheapest_company].beliefs['product_prices'][cheapest_company][selected_product]['stock'] -= available_stock
                         #Actualizar ganancia
-                        if selected_product in market_env.public_variables['companies'][cheapest_company].beliefs['revenue']:
-                            market_env.public_variables['companies'][cheapest_company].beliefs['revenue'][selected_product]+= available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
+                        if selected_product in market_env.public_variables['companies'][cheapest_company].revenue:
+                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product]+= available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
                         else:
-                            market_env.public_variables['companies'][cheapest_company].beliefs['revenue'][selected_product]= available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
+                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product]= available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
 
                         # Registrar la compra en el log
                         logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
