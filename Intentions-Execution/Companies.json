@@ -7,7 +7,7 @@
         "actions": "self.plan_investment()",
         "log": "f'{self.name} executed intention to plan investment.'"
     },
-    "create_proposales":{
+    "create_proposals":{
         "actions": "self.initial_proposals()",
         "log": "f'{self.name} executed intention to form initial proposals.'"
     },

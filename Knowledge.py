@@ -1,6 +1,4 @@
-import skfuzzy as fuzz
 from skfuzzy import control as ctrl
-import numpy as np
 import json
 
 class Knowledge:

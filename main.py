@@ -66,12 +66,6 @@ def run_simulation(market_env:MarketEnvironment, steps=30):
     for step in range(steps):
         logging.info(f"\n========== Day {step + 1} ==========")
 
-        for agent in list(market_env.public_variables['suppliers'].values()):
-            agent.perceive_environment(market_env)
-            agent.form_desires()
-            agent.plan_intentions()
-            agent.act(market_env)
-
         for agent in list(market_env.public_variables['companies'].values()):
             agent.perceive_environment(market_env)
             agent.form_desires()
@@ -83,8 +77,6 @@ def run_simulation(market_env:MarketEnvironment, steps=30):
             agent.form_desires()
             agent.plan_intentions()
             agent.act(market_env)
-
-        #market_env.update_environment()
 
         log_environment_data(market_env)
 

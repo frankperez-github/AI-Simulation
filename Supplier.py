@@ -17,9 +17,7 @@ class SupplierAgent(BDI_Agent):
     def __init__(self, name,products):
         super().__init__(name)
         self.beliefs['supplier_conditions']=products
-        self.beliefs['r_offers']=[]
-        self.beliefs['s_offers']=[]
-        self.beliefs['agreements']=[]
+        self.agreements = []
     
     #def initialize_supplier(self):
     #    market_env.hidden_variables['supplier_conditions'][self.name] = {
@@ -60,28 +58,41 @@ class SupplierAgent(BDI_Agent):
                 for subproduct in subproducts:
                     if subproduct in self.beliefs['supplier_conditions']:
                         market_env.public_variables['companies'][company].subproduct_stock[subproduct]['stock']+=100
-'''
-        for product, demand in market_env.public_variables['market_demand'].items():
-            supplier_data = market_env.hidden_variables['supplier_conditions'][self.name].get(product, None)
-            if supplier_data and supplier_data['quantity'] > 0:
-                supply_quantity = min(demand + 10, supplier_data['quantity']) if demand > 0 else random.randint(1, supplier_data['quantity'])
-                
-                market_price = market_env.public_variables['product_prices'].get(self.name, {}).get(product, 0)
-                if market_price >= supplier_data['min_price']:
-                    market_env.public_variables['market_demand'][product] = max(0, demand - supply_quantity)
-                    self.update_stock(product, supply_quantity)
-                    
-                    market_env.hidden_variables['supplier_conditions'][self.name][product]['quantity'] -= supply_quantity
-                    logging.info(f"{self.name} has supplied {supply_quantity} units of {product} at price {market_price} (min price: {supplier_data['min_price']}).")
-                
-                else:
-                    logging.info(f"{self.name} could not supply {product} as the market price {market_price} is below the minimum price {supplier_data['min_price']}.")
-            else:
-                logging.info(f"{self.name} has no stock or data for {product}.")
 
-    def update_stock(self, product, quantity):
-        if product in market_env.public_variables['available_products']:
-            market_env.public_variables['available_products'][product] += quantity
+    def evaluate_offer(self, offer):
+        """
+        The supplier evaluates the offer using fuzzy logic to decide whether to accept, reject, or make a counteroffer.
+        :param offer: The initial offer from the company
+        """
+        product = offer['product']
+        quantity = offer['quantity']
+        price = offer['price']
+        
+        supplier_conditions = self.beliefs['supplier_conditions'].get(product, {})
+        min_price = supplier_conditions.get('min_price', None)
+        available_quantity = supplier_conditions.get('quantity', 0)
+        
+        if min_price is None:
+            logging.info(f"{self.name} does not supply {product}.")
+            return None
+        
+        self.knowledge.simulation.input['price'] = (price - min_price) / min_price * 100
+        self.knowledge.simulation.input['quantity'] = (quantity / available_quantity) * 100
+        
+        self.knowledge.simulation.compute()
+        
+        acceptability = self.knowledge.simulation.output['acceptability']
+        
+        if acceptability > 75:
+            logging.info(f"{self.name} accepts the offer for {quantity} units of {product} at {price} per unit.")
+            return offer
         else:
-            market_env.public_variables['available_products'][product] = quantity
-        logging.info(f"{self.name} has updated the stock of {product}. New quantity: {market_env.public_variables['available_products'][product]}")'''
+            counter_quantity = min(available_quantity, quantity)
+            counter_price = max(min_price, price * 1.10)
+            counter_offer = {
+                'product': product,
+                'quantity': counter_quantity,
+                'price': counter_price
+            }
+            logging.info(f"{self.name} counters the offer with {counter_quantity} units of {product} at {counter_price} per unit.")
+            return counter_offer
