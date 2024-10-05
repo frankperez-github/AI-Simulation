@@ -40,9 +40,6 @@ def log_environment_data(market_env):
         for item in company.revenue.items():
             revenue.append(tuple([company.name])+item)
     revenue_df = pd.DataFrame(revenue, columns=['Company','Product', 'Revenue'])
-
-
-
     logging.info("\n----- Market Environment Data -----")
     #logging.info("\nAvailable Products (Stock):")
     #logging.info(available_products_df.to_string(index=False))
