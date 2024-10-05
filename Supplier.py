@@ -21,28 +21,28 @@ class SupplierAgent(BDI_Agent):
         self.agreements = []
         self.knowledge = knowledge
     
-    def perceive_environment(self,market_env):
+    def perceive_environment(self,market_env, show_logs):
         self.beliefs['product_prices']=market_env.public_variables['product_prices']
         self.beliefs['subproducts']=market_env.public_variables['subproducts']
-        logging.info(f"{self.name} has perceived the environment and updated beliefs about market demand and available products.")
+        if show_logs: logging.info(f"{self.name} has perceived the environment and updated beliefs about market demand and available products.")
 
-    def form_desires(self):
+    def form_desires(self, show_logs):
         supply = random.choice([True, False]) 
         if supply:
             self.desires.append('supply_products')
-        logging.info(f"{self.name} has formed desires. Supply products: {supply}")
+        if show_logs: logging.info(f"{self.name} has formed desires. Supply products: {supply}")
 
-    def plan_intentions(self):
+    def plan_intentions(self, show_logs):
         for desire in self.desires:
             self.intentions += desires_intentions[desire]
-            logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
+            if show_logs: logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
         self.desires=[]
 
-    def execute_intention(self,intention, market_env):
+    def execute_intention(self,intention, market_env, show_logs):
         execution = intentions_execution[intention]
         for action in execution["actions"]:
             eval(action)
-        logging.info(eval(execution["log"]))
+        if show_logs: logging.info(eval(execution["log"]))
 
     def supply_products(self, market_env: MarketEnvironment):
         for company in self.beliefs['product_prices']:
@@ -52,7 +52,7 @@ class SupplierAgent(BDI_Agent):
                     if subproduct in self.beliefs['supplier_conditions']:
                         market_env.public_variables['companies'][company].subproduct_stock[subproduct]['stock']+=100
 
-    def evaluate_offer(self, offer):
+    def evaluate_offer(self, offer, show_logs):
         """
         The supplier evaluates the offer using fuzzy logic to decide whether to accept, reject, or make a counteroffer.
         If the requested quantity exceeds available stock, the supplier offers the available quantity instead and counters.
@@ -67,12 +67,12 @@ class SupplierAgent(BDI_Agent):
         available_quantity = supplier_conditions.get('quantity', 0)
 
         if min_price is None:
-            logging.info(f"{self.name} does not supply {product}.")
+            if show_logs: logging.info(f"{self.name} does not supply {product}.")
             return None
 
         # Adjust quantity if stock is less than requested
         if requested_quantity > available_quantity:
-            logging.info(f"{self.name} does not have enough stock to supply {requested_quantity} units of {product}. Offering available stock: {available_quantity}")
+            if show_logs: logging.info(f"{self.name} does not have enough stock to supply {requested_quantity} units of {product}. Offering available stock: {available_quantity}")
             requested_quantity = available_quantity  # Adjust quantity to available stock
 
         # Use fuzzy logic to calculate the price based on the adjusted quantity
@@ -85,7 +85,7 @@ class SupplierAgent(BDI_Agent):
 
         # If acceptability is high and stock is sufficient
         if acceptability > 75 and requested_quantity == offer['quantity']:
-            logging.info(f"{self.name} accepts the offer for {requested_quantity} units of {product} at {price_to_sell} per unit.")
+            if show_logs: logging.info(f"{self.name} accepts the offer for {requested_quantity} units of {product} at {price_to_sell} per unit.")
             return {
                 'product': product,
                 'quantity': requested_quantity,
@@ -93,16 +93,12 @@ class SupplierAgent(BDI_Agent):
             }
 
         # If stock is less than requested, propose a counteroffer with the adjusted quantity and price
-        logging.info(f"{self.name} counters the company's offer with {requested_quantity} units at {price_to_sell} per unit.")
+        if show_logs: logging.info(f"{self.name} counters the company's offer with {requested_quantity} units at {price_to_sell} per unit.")
         return {
             'product': product,
             'quantity': requested_quantity,
             'price': price_to_sell
         }
-
-
-
-
 
     
     def calculate_price_based_on_quantity(self, quantity, available_quantity, min_price):
@@ -153,7 +149,7 @@ class SupplierAgent(BDI_Agent):
 
 
 
-    def evaluate_counteroffer(self, offer, counteroffer):
+    def evaluate_counteroffer(self, offer, counteroffer, show_logs):
         """
         The supplier evaluates the company's counteroffer and decides whether to accept it or propose a new offer.
         If the requested quantity exceeds the available stock, the supplier directly returns a counteroffer with adjusted quantity and price.
@@ -163,10 +159,10 @@ class SupplierAgent(BDI_Agent):
         :return: True if agreement is reached, otherwise a new counteroffer
         """
         if counteroffer is None:
-            logging.info(f"{self.name} did not receive a valid counteroffer from the company.")
+            if show_logs: logging.info(f"{self.name} did not receive a valid counteroffer from the company.")
             return False
 
-        logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
+        if show_logs: logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
 
         product = counteroffer['product']
         requested_quantity = counteroffer['quantity']
@@ -177,18 +173,18 @@ class SupplierAgent(BDI_Agent):
         available_quantity = supplier_conditions.get('quantity', 0)
 
         if min_price is None:
-            logging.info(f"{self.name} does not supply {product}.")
+            if show_logs: logging.info(f"{self.name} does not supply {product}.")
             return False
 
         # If the requested quantity exceeds the available stock, return a counteroffer with adjusted quantity and price
         if requested_quantity > available_quantity:
-            logging.info(f"{self.name} does not have enough stock to supply {requested_quantity} units of {product}. Offering available stock: {available_quantity}")
+            if show_logs: logging.info(f"{self.name} does not have enough stock to supply {requested_quantity} units of {product}. Offering available stock: {available_quantity}")
             
             # Calculate the new price based on the available quantity
             counter_price = self.calculate_price_based_on_quantity(available_quantity, available_quantity, min_price)
             
             # Return the counteroffer with adjusted quantity and price
-            logging.info(f"{self.name} counters the company's offer with {available_quantity} units at {counter_price} per unit.")
+            if show_logs: logging.info(f"{self.name} counters the company's offer with {available_quantity} units at {counter_price} per unit.")
             return {
                 'product': product,
                 'quantity': available_quantity,
@@ -205,7 +201,7 @@ class SupplierAgent(BDI_Agent):
 
         # Decision: Accept or Counteroffer
         if acceptability > 75:
-            logging.info(f"{self.name} accepts the counteroffer for {requested_quantity} units of {product} at {price_to_sell} per unit.")
+            if show_logs: logging.info(f"{self.name} accepts the counteroffer for {requested_quantity} units of {product} at {price_to_sell} per unit.")
             return {
                 'product': product,
                 'quantity': requested_quantity,

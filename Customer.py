@@ -24,35 +24,35 @@ class CustomerAgent(BDI_Agent):
         self.quintil = -1
 
 
-    def perceive_environment(self,market_env:MarketEnvironment):
+    def perceive_environment(self,market_env:MarketEnvironment, show_logs):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
         self.beliefs['company_popularity']=market_env.public_variables['company_popularity']
         for company in self.beliefs['company_popularity']:
             for product in self.beliefs['company_popularity'][company]:
                 self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
-        logging.info(f"{self.name} has perceived the environment and updated beliefs about available products and prices.")
+        if show_logs: logging.info(f"{self.name} has perceived the environment and updated beliefs about available products and prices.")
 
-    def form_desires(self):
+    def form_desires(self, show_logs):
         self.desires.append('buy_products')
-        logging.info(f"{self.name} formed the desire to buy products")
+        if show_logs: logging.info(f"{self.name} formed the desire to buy products")
 
-    def plan_intentions(self):
+    def plan_intentions(self, show_logs):
         logging.info(self.desires)
         for desire in self.desires:
             intention = desires_intentions[f"{desire}_{self.attitude}"]
             self.intentions.append(intention)
-            logging.info(f"{self.name} planned the intention to {intention}")
+            if show_logs: logging.info(f"{self.name} planned the intention to {intention}")
         self.desires=[]
 
-    def execute_intention(self, intention, market_env):
-        logging.info(f"{self.name} will execute the intention: {intention}")
-        products = [product for product in self.alpha if self.alpha[product]>0]
+    def execute_intention(self, intention, market_env, show_logs):
+        if show_logs: logging.info(f"{self.name} will execute the intention: {intention}")
         execution = intentions_execution[intention]
+        products = [product for product in self.alpha if self.alpha[product]>0] # Used in actions execution
         for action in execution["actions"]:
             exec(action)
-        logging.info(eval(execution["log"]))
+        if show_logs: logging.info(eval(execution["log"]))
 
-    def buy(self, selected_products, cheapest_companies, quantities,market_env:MarketEnvironment):
+    def buy(self, selected_products, cheapest_companies, quantities,market_env:MarketEnvironment, show_logs):
         for i in range(len(selected_products)):
             if cheapest_companies[i] is not None:
                 selected_product = selected_products[i]
@@ -70,10 +70,10 @@ class CustomerAgent(BDI_Agent):
                             market_env.public_variables['companies'][cheapest_company].revenue[selected_product]= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
 
                         # Registrar la compra en el log
-                        logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
+                        if show_logs: logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
                     else:
                         # No hay suficiente stock
-                        logging.warning(f"{self.name} attempted to buy {quantity} units of {selected_product}, but only {available_stock} units were available. So the customer decides to buy {quantity} units of {selected_product} ")
+                        if show_logs: logging.warning(f"{self.name} attempted to buy {quantity} units of {selected_product}, but only {available_stock} units were available. So the customer decides to buy {quantity} units of {selected_product} ")
                          # Reduce stock
                         market_env.public_variables['companies'][cheapest_company].beliefs['product_prices'][cheapest_company][selected_product]['stock'] -= available_stock
                         #Actualizar ganancia
@@ -83,9 +83,9 @@ class CustomerAgent(BDI_Agent):
                             market_env.public_variables['companies'][cheapest_company].revenue[selected_product]= available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
 
                         # Registrar la compra en el log
-                        logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
+                        if show_logs: logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
                        
-    def buy_cheapest_products(self,selected_products,market_env:MarketEnvironment):
+    def buy_cheapest_products(self,selected_products,market_env:MarketEnvironment, show_logs):
 
         cheapest_companies = []
         quantities = []
@@ -104,11 +104,11 @@ class CustomerAgent(BDI_Agent):
             cheapest_companies.append(cheapest_company)
             quantities.append(quantity)
 
-        logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {cheapest_companies}")
+        if show_logs: logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {cheapest_companies}")
         return [selected_products, cheapest_companies, quantities]
 
 
-    def buy_products_by_popularity(self,selected_products,market_env:MarketEnvironment):
+    def buy_products_by_popularity(self,selected_products,market_env:MarketEnvironment, show_logs):
             populars_companies = []
             quantities = []
 
@@ -127,16 +127,15 @@ class CustomerAgent(BDI_Agent):
                 populars_companies.append(popular_company)
                 quantities.append(quantity)
             
-            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {populars_companies}")
+            if show_logs: logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {populars_companies}")
             return [selected_products, populars_companies, quantities]
 
 
-    def buy_products_randomly(self,selected_products,market_env:MarketEnvironment):
+    def buy_products_randomly(self,selected_products,market_env:MarketEnvironment, show_logs):
             companies = []
             quantities = []
 
             for selected_product in selected_products:
-
                 comp=[x for x in self.beliefs['product_prices'] if (selected_product in self.beliefs['product_prices'][x] and market_env.public_variables['companies'][x].beliefs['product_prices'][x][selected_product]['stock']>0)]
                 if not comp: comp=[None]
                 company=random.choice(comp)
@@ -147,11 +146,11 @@ class CustomerAgent(BDI_Agent):
                 companies.append(company)
                 quantities.append(quantity)
 
-            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {companies}")
+            if show_logs: logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {companies}")
             return [selected_products,companies, quantities]
 
 
-    def buy_products_but_think_about_it(self,selected_products,market_env:MarketEnvironment):
+    def buy_products_but_think_about_it(self,selected_products,market_env:MarketEnvironment, show_logs):
 
             companies = []
             quantities = []
@@ -173,5 +172,5 @@ class CustomerAgent(BDI_Agent):
                 companies.append(cheapest_comp)
                 quantities.append(quantity)
 
-            logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {companies}")
+            if show_logs: logging.info(f"{self.name} selected products: {selected_products} with quantities: {quantities} from companies: {companies}")
             return [selected_products,companies, quantities]

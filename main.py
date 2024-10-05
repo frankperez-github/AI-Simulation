@@ -10,6 +10,7 @@ from Supplier import SupplierAgent
 from utils import distribute_budgets, classify_quintiles, assign_alpha
 from Company_Knowledge import Company_Knowledge
 from Suppliers_Knowledge import Suppliers_Knowledge
+from Simulation_methods import run_simulation
 
 companies_rules = './Knowledge/Companies_Rules.json'
 companies_functions = './Knowledge/Companies_Functions.json'
@@ -47,46 +48,7 @@ for i in range(count_products):
     mean_alpha_quintiles[i] = [0.15, 0.13, 0.12, 0.1, 0.08]
     sd_alpha[i] = 0.02
 
-def log_environment_data(market_env):
-    #available_products_df = pd.DataFrame(list(market_env.public_variables['available_products'].items()), columns=['Product', 'Available Stock'])
-    product_prices_df = pd.DataFrame([(company, product, price) for company, products in market_env.public_variables['product_prices'].items() for product, price in products.items()], columns=['Company', 'Product', 'Price'])
-    revenue=[]
-    for company in list(market_env.public_variables['companies'].values()):
-        for item in company.revenue.items():
-            revenue.append(tuple([company.name])+item)
-    revenue_df = pd.DataFrame(revenue, columns=['Company','Product', 'Revenue'])
-
-
-
-    logging.info("\n----- Market Environment Data -----")
-    #logging.info("\nAvailable Products (Stock):")
-    #logging.info(available_products_df.to_string(index=False))
-    logging.info("\nProduct Prices:")
-    logging.info(product_prices_df.to_string(index=False))
-    logging.info("\nCompany Revenue:")
-    logging.info(revenue_df.to_string(index=False))
-    logging.info("-----------------------------------\n")
-
-
-def run_simulation(market_env:MarketEnvironment, steps=30):
-    for step in range(steps):
-        logging.info(f"\n========== Day {step + 1} ==========")
-
-        for agent in list(market_env.public_variables['companies'].values()):
-            agent.perceive_environment(market_env)
-            agent.form_desires()
-            agent.plan_intentions()
-            agent.act(market_env)
-
-        for agent in list(market_env.public_variables['clients'].values()):
-            agent.perceive_environment(market_env)
-            agent.form_desires()
-            agent.plan_intentions()
-            agent.act(market_env)
-
-        log_environment_data(market_env)
-
-
+    
 products=["product_1","product_2","product_3"]
 
 
@@ -123,9 +85,9 @@ companies = {"A":CompanyAgent("A",companies_knowledge, deepcopy(revenue),deepcop
     "C":CompanyAgent("C", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock))}
 
 products_supplier={
-               'product_1': {'quantity': 10, 'min_price': 5.0},
-               'product_2': {'quantity': 20, 'min_price': 10.0},
-               'product_3': {'quantity': 10, 'min_price': 5.0},
+               'product_1': {'quantity': 100, 'min_price': 5.0},
+               'product_2': {'quantity': 200, 'min_price': 10.0},
+               'product_3': {'quantity': 100, 'min_price': 5.0},
        }
 
 suppliers = {
@@ -185,4 +147,4 @@ market_env= MarketEnvironment(
 )
 
 
-run_simulation(market_env)
+run_simulation(market_env, short_version=False)
