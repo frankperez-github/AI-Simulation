@@ -71,7 +71,7 @@ class CompanyAgent(BDI_Agent):
             self.product_budget[product] = revenue *4/5
 
     def produce(self, market_env):
-        run_short_simulation(market_env, 2)
+        print("Producing...")
 
     def plan_investment(self):
         for product in self.product_stock:
