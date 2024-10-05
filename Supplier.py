@@ -69,6 +69,9 @@ class SupplierAgent(BDI_Agent):
         if min_price is None:
             if show_logs: logging.info(f"{self.name} does not supply {product}.")
             return None
+        
+        if available_quantity == 0:
+            return None
 
         # Adjust quantity if stock is less than requested
         if requested_quantity > available_quantity:

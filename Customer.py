@@ -52,7 +52,7 @@ class CustomerAgent(BDI_Agent):
             exec(action)
         if show_logs: logging.info(eval(execution["log"]))
 
-    def buy(self, selected_products, cheapest_companies, quantities,market_env:MarketEnvironment, show_logs):
+    def buy(self, selected_products, cheapest_companies, quantities, market_env, show_logs):
         for i in range(len(selected_products)):
             if cheapest_companies[i] is not None:
                 selected_product = selected_products[i]
@@ -61,7 +61,7 @@ class CustomerAgent(BDI_Agent):
                 available_stock = market_env.public_variables['companies'][cheapest_company].beliefs['product_prices'][cheapest_company][selected_product]['stock'] 
                 if quantity>0:
                     if available_stock >= quantity:
-                        # Reduce stock
+                        # Reducir stock
                         market_env.public_variables['companies'][cheapest_company].beliefs['product_prices'][cheapest_company][selected_product]['stock'] -= quantity
                         #Actualizar ganancia
                         if selected_product in market_env.public_variables['companies'][cheapest_company].revenue:
