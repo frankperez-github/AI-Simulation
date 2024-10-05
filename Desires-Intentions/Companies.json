@@ -1,5 +1,5 @@
 {
     "manage_profit": ["designate_budgets", "plan_investment"],
-    "manage_production": ["create_proposales", "buy_subproducts"],
+    "manage_production": ["create_proposals", "buy_subproducts"],
     "manage_sales": ["adjust_prices", "produce"]
 }

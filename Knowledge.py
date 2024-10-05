@@ -1,7 +1,7 @@
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
-import numpy as np
 import json
+import numpy as np
 
 class Knowledge:
     def __init__(self):

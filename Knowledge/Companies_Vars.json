@@ -1,5 +1,9 @@
 {
     "sales" : "ctrl.Antecedent(np.arange(0, 101, 1), 'sales')",
     "popularity" : "ctrl.Antecedent(np.arange(0, 101, 1), 'popularity')",
-    "production" : "ctrl.Consequent(np.arange(0, 101, 1), 'production')"
+    "production" : "ctrl.Consequent(np.arange(0, 101, 1), 'production')",
+
+    "price" : "ctrl.Antecedent(np.arange(0, 101, 1), 'price')",
+    "quantity" : "ctrl.Antecedent(np.arange(0, 101, 1), 'quantity')",
+    "acceptability" : "ctrl.Consequent(np.arange(0, 101, 1), 'acceptability')"
 }

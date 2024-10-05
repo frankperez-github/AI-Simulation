@@ -17,7 +17,23 @@
         "medium" : "fuzz.trimf(self.vars['production'].universe,  [30, 50, 70])",
         "high" : "fuzz.trimf(self.vars['production'].universe, [60, 75, 90])",
         "very_high" : "fuzz.trimf(self.vars['production'].universe, [80, 100, 100])"
+    },
+
+    "price" : {
+        "low" : "fuzz.trimf(self.vars['price'].universe, [0, 0, 50])",
+        "medium" : "fuzz.trimf(self.vars['price'].universe, [25, 50, 75])",
+        "high" : "fuzz.trimf(self.vars['price'].universe, [50, 100, 100])"
+    },
+
+    "quantity" : {
+        "low" : "fuzz.trimf(self.vars['quantity'].universe, [0, 0, 50])",
+        "medium" : "fuzz.trimf(self.vars['quantity'].universe, [25, 50, 75])",
+        "high" : "fuzz.trimf(self.vars['quantity'].universe, [50, 100, 100])"
+    },
+
+    "acceptability" : {
+        "unacceptable" : "fuzz.trimf(self.vars['acceptability'].universe, [0, 0, 50])",
+        "acceptable" : "fuzz.trimf(self.vars['acceptability'].universe, [25, 50, 75])",
+        "very_acceptable" : "fuzz.trimf(self.vars['acceptability'].universe, [50, 100, 100])"
     }
-
 }
-

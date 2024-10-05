@@ -7,22 +7,22 @@
         "actions": "self.plan_investment()",
         "log": "f'{self.name} executed intention to plan investment.'"
     },
-    "create_proposales":{
+    "create_proposals":{
         "actions": "self.initial_proposals()",
         "log": "f'{self.name} executed intention to form initial proposals.'"
     },
      
     "buy_subproducts":{
+        "actions": "self.secure_subproduct_supply(market_env)",
+        "log": "f'{self.name} executed intention to secure subproduct supply.'"
+    },
+    "adjust_prices":{
         "actions": "self.adjust_price(-0.1,market_env)",
         "log": "f'{self.name} executed intention to lower prices.'"
     },
-    "adjust_prices":{
-        "actions": "self.secure_subproduct_supply()",
-        "log": "f'{self.name} executed intention to secure subproduct supply.'"
-    },
 
     "produce":{
-        "actions": "self.secure_subproduct_supply()",
+        "actions": "self.produce()",
         "log": "f'{self.name} executed intention to secure subproduct supply.'"
     }
 }
