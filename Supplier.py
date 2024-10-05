@@ -3,6 +3,7 @@ import logging
 from BaseAgent import BDI_Agent
 from Environment import MarketEnvironment
 import json
+from Knowledge import *
  
 des_int_json_file = open('./Desires-Intentions/Suppliers.json',)
 int_exec_json_file = open('./Intentions-Execution/Suppliers.json',)
@@ -14,10 +15,11 @@ intentions_execution = json.load(int_exec_json_file)
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class SupplierAgent(BDI_Agent):
-    def __init__(self, name,products):
+    def __init__(self, name, products, knowledge):
         super().__init__(name)
         self.beliefs['supplier_conditions']=products
         self.agreements = []
+        self.knowledge = knowledge
     
     #def initialize_supplier(self):
     #    market_env.hidden_variables['supplier_conditions'][self.name] = {
@@ -67,6 +69,7 @@ class SupplierAgent(BDI_Agent):
         quantity = offer['quantity']
         price = offer['price']
         
+        # Retrieve the supplier's conditions for the product
         supplier_conditions = self.beliefs['supplier_conditions'].get(product, {})
         min_price = supplier_conditions.get('min_price', None)
         available_quantity = supplier_conditions.get('quantity', 0)
@@ -75,16 +78,14 @@ class SupplierAgent(BDI_Agent):
             logging.info(f"{self.name} does not supply {product}.")
             return None
         
-        self.knowledge.simulation.input['price'] = (price - min_price) / min_price * 100
-        self.knowledge.simulation.input['quantity'] = (quantity / available_quantity) * 100
+        price_percentage = (price - min_price) / min_price * 100
+        quantity_percentage = (quantity / available_quantity) * 100 if available_quantity > 0 else 0
         
-        self.knowledge.simulation.compute()
-        
-        acceptability = self.knowledge.simulation.output['acceptability']
+        acceptability = self.knowledge.evaluate_offer(price_percentage, quantity_percentage)
         
         if acceptability > 75:
             logging.info(f"{self.name} accepts the offer for {quantity} units of {product} at {price} per unit.")
-            return offer
+            return offer  
         else:
             counter_quantity = min(available_quantity, quantity)
             counter_price = max(min_price, price * 1.10)
@@ -95,3 +96,43 @@ class SupplierAgent(BDI_Agent):
             }
             logging.info(f"{self.name} counters the offer with {counter_quantity} units of {product} at {counter_price} per unit.")
             return counter_offer
+
+
+    def evaluate_counteroffer(self, offer, counteroffer):
+        """
+        The company evaluates the supplier's counteroffer using fuzzy logic to decide whether to accept or propose a new offer.
+        :param offer: The company's original offer
+        :param counteroffer: The supplier's counteroffer
+        :return: True if agreement is reached, otherwise a new counteroffer
+        """
+        if counteroffer is None:
+            logging.info(f"{self.name} did not receive a valid counteroffer from the supplier.")
+            return False
+
+        logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
+
+        # Normalize price and quantity for fuzzy logic input (percentage)
+        price_percentage = (counteroffer['price'] - offer['price']) / offer['price'] * 100
+        quantity_percentage = (counteroffer['quantity'] / offer['quantity']) * 100
+
+        # Use the Company_Knowledge class to evaluate the acceptability of the counteroffer
+        acceptability = self.knowledge.evaluate_offer(price_percentage, quantity_percentage)
+
+        # Decision based on fuzzy logic output
+        if acceptability > 75: 
+            logging.info(f"{self.name} accepts the counteroffer.")
+            return True  # Agreement reached
+
+        # Otherwise, propose a new counteroffer
+        new_price = (offer['price'] + counteroffer['price']) / 2
+        new_quantity = (offer['quantity'] + counteroffer['quantity']) / 2
+        new_offer = {
+            'product': offer['product'],
+            'quantity': new_quantity,
+            'price': new_price
+        }
+
+        logging.info(f"{self.name} counters the supplier's offer with {new_quantity} units at {new_price} per unit.")
+        return new_offer
+
+

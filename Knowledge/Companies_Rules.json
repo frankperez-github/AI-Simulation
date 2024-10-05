@@ -1,5 +1,6 @@
 {
-    "rules": [ "ctrl.Rule(self.vars['sales']['high'] & self.vars['popularity']['high'], [self.vars['production']['very_high']])",
+    "rules": [
+        "ctrl.Rule(self.vars['sales']['high'] & self.vars['popularity']['high'], [self.vars['production']['very_high']])",
         "ctrl.Rule(self.vars['sales']['high'] & self.vars['popularity']['medium'], [self.vars['production']['high']])",
         "ctrl.Rule(self.vars['sales']['high'] & self.vars['popularity']['low'], [self.vars['production']['high']])",
         "ctrl.Rule(self.vars['sales']['medium'] & self.vars['popularity']['high'], [self.vars['production']['high']])",
@@ -7,6 +8,17 @@
         "ctrl.Rule(self.vars['sales']['medium'] & self.vars['popularity']['low'], [self.vars['production']['medium']])",
         "ctrl.Rule(self.vars['sales']['low'] & self.vars['popularity']['high'], [self.vars['production']['medium']])",
         "ctrl.Rule(self.vars['sales']['low'] & self.vars['popularity']['medium'], [self.vars['production']['low']])",
-        "ctrl.Rule(self.vars['sales']['low'] & self.vars['popularity']['low'], [self.vars['production']['low']])"
-        ]
+        "ctrl.Rule(self.vars['sales']['low'] & self.vars['popularity']['low'], [self.vars['production']['low']])",
+
+        
+        "ctrl.Rule(self.vars['price']['low'] & self.vars['quantity']['high'], [self.vars['acceptability']['very_acceptable']])",
+        "ctrl.Rule(self.vars['price']['low'] & self.vars['quantity']['medium'], [self.vars['acceptability']['acceptable']])",
+        "ctrl.Rule(self.vars['price']['low'] & self.vars['quantity']['low'], [self.vars['acceptability']['acceptable']])",
+        "ctrl.Rule(self.vars['price']['medium'] & self.vars['quantity']['high'], [self.vars['acceptability']['acceptable']])",
+        "ctrl.Rule(self.vars['price']['medium'] & self.vars['quantity']['medium'], [self.vars['acceptability']['acceptable']])",
+        "ctrl.Rule(self.vars['price']['medium'] & self.vars['quantity']['low'], [self.vars['acceptability']['unacceptable']])",
+        "ctrl.Rule(self.vars['price']['high'] & self.vars['quantity']['high'], [self.vars['acceptability']['acceptable']])",
+        "ctrl.Rule(self.vars['price']['high'] & self.vars['quantity']['medium'], [self.vars['acceptability']['unacceptable']])",
+        "ctrl.Rule(self.vars['price']['high'] & self.vars['quantity']['low'], [self.vars['acceptability']['unacceptable']])"
+    ]
 }

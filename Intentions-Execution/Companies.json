@@ -13,12 +13,12 @@
     },
      
     "buy_subproducts":{
-        "actions": "self.adjust_price(-0.1,market_env)",
-        "log": "f'{self.name} executed intention to lower prices.'"
+        "actions": "self.secure_subproduct_supply(market_env)",
+        "log": "f'{self.name} executed intention to secure subproduct supply.'"
     },
     "adjust_prices":{
-        "actions": "self.secure_subproduct_supply()",
-        "log": "f'{self.name} executed intention to secure subproduct supply.'"
+        "actions": "self.adjust_price(-0.1,market_env)",
+        "log": "f'{self.name} executed intention to lower prices.'"
     },
 
     "produce":{

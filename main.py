@@ -9,10 +9,15 @@ from Customer import CustomerAgent
 from Supplier import SupplierAgent
 from utils import distribute_budgets, classify_quintiles, assign_alpha
 from Company_Knowledge import Company_Knowledge
+from Suppliers_Knowledge import Suppliers_Knowledge
 
 companies_rules = './Knowledge/Companies_Rules.json'
 companies_functions = './Knowledge/Companies_Functions.json'
 companies_vars = './Knowledge/Companies_Vars.json'
+
+suppliers_rules = './Knowledge/Suppliers_Rules.json'
+suppliers_functions = './Knowledge/Suppliers_Functions.json'
+suppliers_vars = './Knowledge/Suppliers_Vars.json'
 
 log_file_path = os.path.join(os.getcwd(), 'simulation_logs.log')
 
@@ -97,7 +102,8 @@ Customers = classify_quintiles(Customers)
 Customers = assign_alpha(Customers, products, mean_alpha_quintiles, sd_alpha)
 #Customers = calculate_demand_utility(Customers, base_price, count_products)
 
-knowledge = Company_Knowledge(companies_rules,companies_functions, companies_vars)
+companies_knowledge = Company_Knowledge(companies_rules,companies_functions, companies_vars)
+suppleirs_knowledge = Suppliers_Knowledge(suppliers_rules,suppliers_functions, suppliers_vars)
 
 product_stock={
     'product_1':200,'product_2':200,'product_3':200
@@ -112,18 +118,18 @@ subproduct_stock={
 }
 
 
-companies = {"A":CompanyAgent("A",knowledge, deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
-    "B":CompanyAgent("B", knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
-    "C":CompanyAgent("C", knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock))}
+companies = {"A":CompanyAgent("A",companies_knowledge, deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
+    "B":CompanyAgent("B", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
+    "C":CompanyAgent("C", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock))}
 
-product_supplier={
+products_supplier={
                'product_1': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
                'product_2': {'quantity': 200, 'min_price': 10.0, 'start_price':13},
                'product_3': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
        }
 
 suppliers = {
-    "Suministrador1": SupplierAgent("Suministrador1",product_supplier)
+    "Suministrador1": SupplierAgent("Suministrador1",products_supplier, suppleirs_knowledge)
 }
 cust={}
 for customer in Customers:

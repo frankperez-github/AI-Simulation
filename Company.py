@@ -60,17 +60,11 @@ class CompanyAgent(BDI_Agent):
 
     def adjust_price(self, adjustment, market_env):
         for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():
-            
             new_price = price['price'] * (1 + adjustment)
             market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
             logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
-    def secure_subproduct_supply(self):
-        for product in self.beliefs['product_prices'].get(self.name, {}):
-            subproducts = self.beliefs['subproducts'].get(product, {})
-            for subproduct, quantity in subproducts.items():
-                logging.info(f"{self.name} is securing supply for {quantity} units of subproduct: {subproduct}.")
-                # Add logic to secure subproduct supply (negotiate with suppliers)
+    
 
     def designate_budget(self):
         for product, revenue in self.revenue.items():
@@ -101,7 +95,41 @@ class CompanyAgent(BDI_Agent):
                     self.s_offers[sub_product]={}
                     self.s_offers[sub_product]['units']=units*self.beliefs['subproducts'][product][sub_product]
                     self.s_offers[sub_product]['price']= self.subproduct_stock[sub_product]['price']
-        print('-----------------')
-        print(self.name)
-        print(self.s_offers)   
+
+    def secure_subproduct_supply(self, market_env):
+        negotiate(self, market_env.public_variables["suppliers"])
+
+    def evaluate_counteroffer(self, offer, counteroffer):
+        """
+        The company evaluates the supplier's counteroffer and decides whether to accept it or propose a new offer.
+        This version delegates fuzzy logic to Companies_Knowledge's evaluate_offer method.
+        :param offer: The company's original offer
+        :param counteroffer: The supplier's counteroffer
+        :return: True if agreement is reached, otherwise a new counteroffer
+        """
+        if counteroffer is None:
+            logging.info(f"{self.name} did not receive a valid counteroffer from the supplier.")
+            return False
+
+        logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
+
+        price_percentage = (counteroffer['price'] - offer['price']) / offer['price'] * 100
+        quantity_percentage = (counteroffer['quantity'] / offer['quantity']) * 100
+
+        acceptability = self.knowledge.evaluate_offer(price_percentage, quantity_percentage)
+
+        if acceptability > 75:
+            logging.info(f"{self.name} accepts the counteroffer.")
+            return True
+
+        new_price = (offer['price'] + counteroffer['price']) / 2
+        new_quantity = (offer['quantity'] + counteroffer['quantity']) / 2
+        new_offer = {
+            'product': offer['product'],
+            'quantity': new_quantity,
+            'price': new_price
+        }
+
+        logging.info(f"{self.name} counters the supplier's offer with {new_quantity} units at {new_price} per unit.")
+        return new_offer
 

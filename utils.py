@@ -65,10 +65,10 @@ def assign_alpha(households,products,mean_alpha_quintiles,sd_alpha):
 
 
 def calculate_percent(total,part):
-    return part*100/total
+    return part*100/total if total != 0 else 0
 
 
-def negotiate(company):
+def negotiate(company, suppliers):
     """
     The negotiation process between the company and multiple suppliers for each subproduct in the company's s_offers.
     The company selects the best offer (lowest price and/or highest quantity) from multiple suppliers.
@@ -79,15 +79,16 @@ def negotiate(company):
 
     # Iterate over each subproduct in the company's s_offers
     for subproduct, offer_details in company.s_offers.items():
-        target_quantity = offer_details['quantity']
+        target_quantity = offer_details['units']
         target_price = offer_details['price']
         
         best_offer = None
         best_supplier = None
 
         # Iterate through each supplier available to the company
-        for supplier_name, supplier in company.beliefs['subproduct_suppliers'].items():
-            logging.info(f"{company.name} is negotiating with {supplier.name} for {subproduct}.")
+        for supplier_name, subproducts in company.beliefs['subproduct_suppliers'].items():
+            supplier = suppliers[supplier_name]
+            logging.info(f"{company.name} is negotiating with {supplier_name} for {subproduct}.")
             
             # Create the initial offer
             offer = {
@@ -97,30 +98,25 @@ def negotiate(company):
             }
 
             while True:
-                # Step 1: Supplier evaluates the offer and makes a counteroffer if necessary
                 counteroffer = supplier.evaluate_offer(offer)
                 
-                # Step 2: Company evaluates the counteroffer
                 decision = company.evaluate_counteroffer(offer, counteroffer)
                 
                 if decision:
                     logging.info(f"Negotiation successful! {company.name} and {supplier.name} reached an agreement for {subproduct}.")
-                    final_offer = offer  # Final agreed offer
-                    break  # Agreement reached
+                    final_offer = counteroffer
+                    break  
                 elif decision:
                     logging.info(f"Negotiation failed for {subproduct} with {supplier.name}.")
                     final_offer = None
-                    break  # Negotiation failed
+                    break 
 
-                # Update the offer with the new counteroffer
-                offer = decision  # The company makes a new counteroffer
+                offer = decision 
             
-            # Step 3: Compare this supplier's offer to the best offer so far
             if final_offer and (best_offer is None or final_offer['price'] < best_offer['price']):
                 best_offer = final_offer
                 best_supplier = supplier_name
         
-        # Store the best offer for the subproduct
         if best_offer:
             best_offers[subproduct] = {
                 'supplier': best_supplier,
