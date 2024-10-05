@@ -123,9 +123,9 @@ companies = {"A":CompanyAgent("A",companies_knowledge, deepcopy(revenue),deepcop
     "C":CompanyAgent("C", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock))}
 
 products_supplier={
-               'product_1': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
-               'product_2': {'quantity': 200, 'min_price': 10.0, 'start_price':13},
-               'product_3': {'quantity': 100, 'min_price': 5.0, 'start_price':7},
+               'product_1': {'quantity': 10, 'min_price': 5.0},
+               'product_2': {'quantity': 20, 'min_price': 10.0},
+               'product_3': {'quantity': 10, 'min_price': 5.0},
        }
 
 suppliers = {

@@ -22,7 +22,7 @@
     },
 
     "produce":{
-        "actions": "self.secure_subproduct_supply()",
+        "actions": "self.produce()",
         "log": "f'{self.name} executed intention to secure subproduct supply.'"
     }
 }
