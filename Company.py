@@ -3,6 +3,7 @@ from BaseAgent import BDI_Agent
 import json
 from utils import calculate_percent, negotiate
 import random
+from Simulation_methods import run_short_simulation
 
 des_int_json_file = open('./Desires-Intentions/Companies.json',)
 int_exec_json_file = open('./Intentions-Execution/Companies.json',)
@@ -25,7 +26,7 @@ class CompanyAgent(BDI_Agent):
         self.s_offers = {}
         self.agreements = []
 
-    def perceive_environment(self,market_env):
+    def perceive_environment(self,market_env, show_logs):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
 
         for prod in self.beliefs['product_prices'][self.name].keys():
@@ -38,39 +39,39 @@ class CompanyAgent(BDI_Agent):
         for company in self.beliefs['company_popularity']:
             for product in self.beliefs['company_popularity'][company]:
                 self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
-        logging.info(f"{self.name} perceived the environment and updated beliefs.")
+        if show_logs: logging.info(f"{self.name} perceived the environment and updated beliefs.")
 
-    def form_desires(self):
+    def form_desires(self, show_logs):
         self.desires.append('manage_profit')
-        logging.info(f"{self.name} formed desire to manage_profit.")
+        if show_logs: logging.info(f"{self.name} formed desire to manage_profit.")
         self.desires.append('manage_production')
-        logging.info(f"{self.name} formed desire to manage_production.")
+        if show_logs: logging.info(f"{self.name} formed desire to manage_production.")
         self.desires.append('manage_sales')
-        logging.info(f"{self.name} formed desire to manage_sales.")
+        if show_logs: logging.info(f"{self.name} formed desire to manage_sales.")
     
-    def plan_intentions(self):
+    def plan_intentions(self, show_logs):
         for desire in self.desires:
             self.intentions += desires_intentions[desire]
-            logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
+            if show_logs: logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
         self.desires=[]
 
-    def execute_intention(self, intention, market_env):
+    def execute_intention(self, intention, market_env, show_logs):
         execution = intentions_execution[intention]
         eval(execution["actions"])
-        logging.info(eval(execution["log"]))
+        if show_logs: logging.info(eval(execution["log"]))
 
-    def adjust_price(self, adjustment, market_env):
+    def adjust_price(self, adjustment, market_env, show_logs):
         for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():
             new_price = price['price'] * (1 + adjustment)
             market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
-            logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
+            if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
     def designate_budget(self):
         for product, revenue in self.revenue.items():
             self.product_budget[product] = revenue *4/5
 
-    def produce(market_env):
-        print("Producing...")
+    def produce(self, market_env):
+        run_short_simulation(market_env, 2)
 
     def plan_investment(self):
         for product in self.product_stock:
@@ -98,10 +99,10 @@ class CompanyAgent(BDI_Agent):
                     self.s_offers[sub_product]['units']=units*self.beliefs['subproducts'][product][sub_product]
                     self.s_offers[sub_product]['price']= self.subproduct_stock[sub_product]['price']
 
-    def secure_subproduct_supply(self, market_env):
-        negotiate(self, market_env.public_variables["suppliers"])
+    def secure_subproduct_supply(self, market_env, show_logs):
+        negotiate(self, market_env.public_variables["suppliers"], show_logs)
 
-    def evaluate_counteroffer(self, offer, counteroffer):
+    def evaluate_counteroffer(self, offer, counteroffer, show_logs):
         """
         The company evaluates the supplier's counteroffer and decides whether to accept it or propose a new offer.
         This version checks the budget allocated for the specific product before evaluating or making a counteroffer.
@@ -115,7 +116,7 @@ class CompanyAgent(BDI_Agent):
         product_budget_info = self.s_offers.get(product)
         
         if not product_budget_info:
-            logging.warning(f"No budget information available for {product}.")
+            if show_logs: logging.warning(f"No budget information available for {product}.")
             return False
 
         allocated_quantity = product_budget_info['units']
@@ -125,13 +126,13 @@ class CompanyAgent(BDI_Agent):
         total_cost = counteroffer['price'] * counteroffer['quantity']
         
         if counteroffer is None:
-            logging.info(f"{self.name} did not receive a valid counteroffer from the supplier.")
+            if show_logs: logging.info(f"{self.name} did not receive a valid counteroffer from the supplier.")
             return False
 
-        logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
+        if show_logs: logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
 
         if total_cost > allocated_budget:
-            logging.warning(f"{self.name} does not have enough budget to accept the counteroffer for {product}.")
+            if show_logs: logging.warning(f"{self.name} does not have enough budget to accept the counteroffer for {product}.")
             return False
         
         price_percentage = (counteroffer['price'] - offer['price']) / offer['price'] * 100
@@ -140,7 +141,7 @@ class CompanyAgent(BDI_Agent):
         acceptability = self.knowledge.evaluate_offer(price_percentage, quantity_percentage)
 
         if acceptability > 75:
-            logging.info(f"{self.name} accepts the counteroffer.")
+            if show_logs: logging.info(f"{self.name} accepts the counteroffer.")
             return True
 
         new_price = (offer['price'] + counteroffer['price']) / 2
@@ -148,7 +149,7 @@ class CompanyAgent(BDI_Agent):
         new_total_cost = new_price * new_quantity
 
         if new_total_cost > allocated_budget:
-            logging.warning(f"{self.name} does not have enough budget to propose the counteroffer for {product}.")
+            if show_logs: logging.warning(f"{self.name} does not have enough budget to propose the counteroffer for {product}.")
             return False
 
         new_offer = {
@@ -157,7 +158,7 @@ class CompanyAgent(BDI_Agent):
             'price': new_price
         }
 
-        logging.info(f"{self.name} counters the supplier's offer with {new_quantity} units at {new_price} per unit.")
+        if show_logs: logging.info(f"{self.name} counters the supplier's offer with {new_quantity} units at {new_price} per unit.")
         return new_offer
 
 

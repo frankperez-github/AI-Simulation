@@ -68,7 +68,7 @@ def calculate_percent(total,part):
     return part*100/total if total != 0 else 0
 
 
-def negotiate(company, suppliers):
+def negotiate(company, suppliers, show_logs):
     """
     The negotiation process between the company and multiple suppliers for each subproduct in the company's s_offers.
     The company selects the best offer (lowest price and/or highest quantity) from multiple suppliers.
@@ -87,7 +87,7 @@ def negotiate(company, suppliers):
 
         for supplier_name, subproducts in company.beliefs['subproduct_suppliers'].items():
             supplier = suppliers[supplier_name]
-            logging.info(f"{company.name} is negotiating with {supplier_name} for {subproduct}.")
+            if show_logs: logging.info(f"{company.name} is negotiating with {supplier_name} for {subproduct}.")
             
             offer = {
                 'product': subproduct,
@@ -101,50 +101,50 @@ def negotiate(company, suppliers):
 
             while True:
                 # Step 1: Supplier evaluates the company's initial offer
-                counteroffer = supplier.evaluate_offer(offer)
+                counteroffer = supplier.evaluate_offer(offer, show_logs)
 
                 offer["price"] = target_price
 
                 if counteroffer is None:
-                    logging.info(f"{supplier.name} could not make an offer for {subproduct}.")
+                    if show_logs: logging.info(f"{supplier.name} could not make an offer for {subproduct}.")
                     break
 
                 # Step 2: Check if negotiation is stuck in a loop
                 if previous_offer == offer and previous_counteroffer == counteroffer:
-                    logging.info(f"Negotiation loop detected for {subproduct}. Terminating negotiation.")
+                    if show_logs: logging.info(f"Negotiation loop detected for {subproduct}. Terminating negotiation.")
                     final_offer = None
                     break
 
 
                 # Step 3: Company evaluates the supplier's counteroffer
-                new_offer = company.evaluate_counteroffer(offer, counteroffer)
+                new_offer = company.evaluate_counteroffer(offer, counteroffer, show_logs)
 
                 if new_offer == True:
-                    logging.info(f"Negotiation successful! {company.name} and {supplier.name} reached an agreement for {subproduct}.")
+                    if show_logs: logging.info(f"Negotiation successful! {company.name} and {supplier.name} reached an agreement for {subproduct}.")
                     final_offer = counteroffer
                     break  # Agreement reached, exit negotiation loop
                 
                 if new_offer == False:
-                    logging.info(f"Negotiation failed for {subproduct} with {supplier.name}.")
+                    if show_logs: logging.info(f"Negotiation failed for {subproduct} with {supplier.name}.")
                     final_offer = None
                     break  # Exit negotiation loop due to failure
                 
                 # Step 4: Supplier evaluates the new offer from the company (new counter-counteroffer)
-                counteroffer = supplier.evaluate_counteroffer(offer, new_offer)
+                counteroffer = supplier.evaluate_counteroffer(offer, new_offer, show_logs)
 
                 if counteroffer == True:
-                    logging.info(f"{supplier.name} accepts the new offer for {subproduct}.")
+                    if show_logs: logging.info(f"{supplier.name} accepts the new offer for {subproduct}.")
                     final_offer = new_offer
                     break  # Supplier accepts the offer
                 
                 if counteroffer == False:
-                    logging.info(f"Negotiation failed from {supplier.name}'s side for {subproduct}.")
+                    if show_logs: logging.info(f"Negotiation failed from {supplier.name}'s side for {subproduct}.")
                     final_offer = None
                     break  # Supplier rejects the offer and negotiation fails
 
                 # If the negotiation keeps going, set offer for next round
                 offer = new_offer
-                
+
                 # Store the current offer and counteroffer for comparison in the next iteration
                 previous_offer = offer
                 previous_counteroffer = counteroffer
@@ -153,7 +153,7 @@ def negotiate(company, suppliers):
             if final_offer and (best_offer is None or final_offer['price'] < best_offer['price']):
                 best_offer = final_offer
                 best_supplier = supplier_name
-                make_transaction(company, supplier, best_offer)
+                make_transaction(company, supplier, best_offer, show_logs)
 
         # Store the best offer for each subproduct
         if best_offer:
@@ -161,15 +161,15 @@ def negotiate(company, suppliers):
                 'supplier': best_supplier,
                 'offer': best_offer
             }
-            logging.info(f"Best offer for {subproduct}: {best_offer['quantity']} units at {best_offer['price']} per unit from {best_supplier}.")
+            if show_logs: logging.info(f"Best offer for {subproduct}: {best_offer['quantity']} units at {best_offer['price']} per unit from {best_supplier}.")
         else:
-            logging.info(f"No successful negotiation for {subproduct}.")
+            if show_logs: logging.info(f"No successful negotiation for {subproduct}.")
     
     return best_offers
 
 
 
-def make_transaction(company, supplier, offer):
+def make_transaction(company, supplier, offer, show_logs):
     """
     This function handles the transaction between the company and the supplier after an offer is accepted.
     It updates the supplier's stock, the company's product budget, and the company's subproduct stock.
@@ -185,12 +185,12 @@ def make_transaction(company, supplier, offer):
     # Update supplier's stock (reduce the quantity of the product in supplier conditions)
     supplier_conditions = supplier.beliefs['supplier_conditions'].get(product, {})
     if not supplier_conditions:
-        logging.error(f"Supplier does not provide {product}.")
+        if show_logs: logging.error(f"Supplier does not provide {product}.")
         return False  # Transaction fails if the product is not found
     
     # Deduct the quantity from the supplier's stock
     supplier.beliefs['supplier_conditions'][product]['quantity'] -= quantity
-    logging.info(f"{supplier.name} sold {quantity} units of {product} to {company.name}.")
+    if show_logs: logging.info(f"{supplier.name} sold {quantity} units of {product} to {company.name}.")
 
     # Deduct the money from the company's product budget
     allocated_budget = company.s_offers[product]['units'] * company.s_offers[product]['price']
@@ -205,10 +205,10 @@ def make_transaction(company, supplier, offer):
     company.subproduct_stock[product]['stock'] += quantity 
     company.subproduct_stock[product]['price'] = price 
 
-    logging.info(f"{company.name} added {quantity} units of {product} to stock at {price} per unit.")
+    if show_logs: logging.info(f"{company.name} added {quantity} units of {product} to stock at {price} per unit.")
     
     # Update the company's total budget only for this specific product
     company.total_budget += allocated_budget - total_cost 
-    logging.info(f"{company.name}'s total budget updated to {company.total_budget}.")
+    if show_logs: logging.info(f"{company.name}'s total budget updated to {company.total_budget}.")
 
     return True
