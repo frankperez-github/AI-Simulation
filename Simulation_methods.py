@@ -28,7 +28,7 @@ def run_short_simulation(current_env, company_name, company_product_budget, step
     market_copy.public_variables["companies"][company_name].product_budget = company_product_budget
 
     # Run the simulation on the copy
-    run_simulation(market_copy, steps, short_version=True)
+    run_simulation(market_copy, steps, short_version = True)
 
     return market_copy.public_variables["companies"][company_name].revenue
 

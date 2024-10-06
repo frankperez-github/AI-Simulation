@@ -24,6 +24,7 @@ class CompanyAgent(BDI_Agent):
         self.knowledge = knowledge
         self.s_offers = {}
         self.agreements = []
+        self.total_budget = 0
 
     def perceive_environment(self,market_env, show_logs):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
@@ -68,7 +69,9 @@ class CompanyAgent(BDI_Agent):
     def designate_budget(self, show_logs):
         if show_logs:
             # ALGORITMO GENETICO para definir product_budget
-            pass
+            for product, revenue in self.revenue.items():
+                self.product_budget[product] = revenue * 4/5
+            
         else:
             # Use defined product_budget
             for product, revenue in self.revenue.items():
@@ -76,7 +79,7 @@ class CompanyAgent(BDI_Agent):
 
     def produce(self, market_env, show_logs):
         # Step 1: Reset product stock for all products in self.product_stock
-        self.product_stock = {product: 0 for product in market_env.subproducts.keys()}
+        self.product_stock = {product: 0 for product in market_env.public_variables['subproducts'].keys()}
 
         # Step 2: Reset the product quantities in market_env.public_variables['product_prices'] while keeping prices
         product_prices = market_env.public_variables['product_prices'].get(self.name, {})
@@ -88,17 +91,18 @@ class CompanyAgent(BDI_Agent):
             product_created_in_this_round = False
 
             # Step 3: Loop through each product to check if it can be created
-            for product, required_subproducts in market_env.subproducts.items():
+            for product, required_subproducts in market_env.public_variables['subproducts'].items():
                 # Check if there are enough subproducts to create one unit of this product
                 can_produce = all(
-                    self.subproduct_stock.get(subproduct, 0) >= required_quantity
+                    
+                    self.subproduct_stock.get(subproduct, 0)['stock'] >= required_quantity
                     for subproduct, required_quantity in required_subproducts.items()
                 )
 
                 if can_produce:
                     # Deduct the required subproducts from stock
                     for subproduct, required_quantity in required_subproducts.items():
-                        self.subproduct_stock[subproduct] -= required_quantity
+                        self.subproduct_stock[subproduct]['stock'] -= required_quantity
 
                     # Step 4: Update self.product_stock and market_env.public_variables['product_prices']
                     self.product_stock[product] += 1
@@ -114,11 +118,23 @@ class CompanyAgent(BDI_Agent):
 
         if show_logs: logging.info(f"Production complete. Total products created by company {self.name}: {products_created}")
 
-
+    def popularity_percent(self, product):
+        popularity = {}
+        for comp in self.beliefs['company_popularity']:
+            if product in self.beliefs['company_popularity'][comp]:
+                popularity[comp] = self.beliefs['company_popularity'][comp][product]
+        
+        maxi = max(popularity.values())
+        mini = min(popularity.values())
+        if maxi == mini: return popularity[self.name]
+        else:
+            popularity_ = ((((popularity[self.name] -mini)/(maxi-mini))*100) + popularity[self.name])/2
+            return popularity_
+        
     def plan_investment(self):
         for product in self.product_stock:
             sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock'])
-            popularity = self.beliefs['company_popularity'][self.name][product]
+            popularity = self.popularity_percent(product)
             investment = self.knowledge.plan_investment(sales, popularity)
             marketing = self.product_budget[product] * (100 - investment) / 100
             # FUNCION PARA AUMENTAR MARKETING
