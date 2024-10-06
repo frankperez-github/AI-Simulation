@@ -78,45 +78,70 @@ class CompanyAgent(BDI_Agent):
                 self.product_budget[product] = revenue * 4/5
 
     def produce(self, market_env, show_logs):
-        # Step 1: Reset product stock for all products in self.product_stock
-        self.product_stock = {product: 0 for product in market_env.public_variables['subproducts'].keys()}
+        """
+        Produce products based on available subproducts in self.subproduct_stock and the allocated budget for each product.
+        The goal is to produce until the product's allocated budget (from self.product_budget) is covered or the available 
+        subproducts run out.
+        
+        :param market_env: Environment that contains product-subproduct dependencies
+        """
+        # Step 1: Reset product stock to 0 for all products
+        self.product_stock = {product: 0 for product in market_env.public_variables["subproducts"].keys()}
 
         # Step 2: Reset the product quantities in market_env.public_variables['product_prices'] while keeping prices
         product_prices = market_env.public_variables['product_prices'].get(self.name, {})
         for product, details in product_prices.items():
             details['quantity'] = 0  # Reset quantity but keep the price
 
-        products_created = 0
-        while True:
-            product_created_in_this_round = False
+        # Step 3: Calculate the maximum budget for each product
+        product_max_budget = {
+            product: self.product_budget[product] * self.total_budget for product in self.product_budget
+        }
 
-            # Step 3: Loop through each product to check if it can be created
-            for product, required_subproducts in market_env.public_variables['subproducts'].items():
-                # Check if there are enough subproducts to create one unit of this product
+        products_created = 0
+        
+        # Step 4: Sort products by revenue (highest to lowest)
+        sorted_products = sorted(self.revenue.items(), key=lambda x: x[1], reverse=True)
+        
+        # Step 5: Produce products based on revenue priority and budget limit
+        for product, revenue in sorted_products:
+            if product not in self.product_budget:
+                continue  # Skip if product does not have an allocated budget
+            
+            max_budget = product_max_budget[product]
+            current_spent_budget = 0
+            product_price = product_prices.get(product, {}).get('price', 0)
+
+            # Check the subproduct requirements for the current product
+            required_subproducts = market_env.public_variables["subproducts"].get(product, {})
+
+            # Produce as many units as possible until budget or subproducts run out
+            while current_spent_budget + product_price <= max_budget:
                 can_produce = all(
-                    
-                    self.subproduct_stock.get(subproduct, 0)['stock'] >= required_quantity
+                    self.subproduct_stock.get(subproduct, 0)["stock"] >= required_quantity
                     for subproduct, required_quantity in required_subproducts.items()
                 )
 
                 if can_produce:
                     # Deduct the required subproducts from stock
                     for subproduct, required_quantity in required_subproducts.items():
-                        self.subproduct_stock[subproduct]['stock'] -= required_quantity
+                        self.subproduct_stock[subproduct]["stock"] -= required_quantity
 
-                    # Step 4: Update self.product_stock and market_env.public_variables['product_prices']
+                    # Update product stock and product prices
                     self.product_stock[product] += 1
                     product_prices[product]['quantity'] += 1
 
-                    # Track that a product was created
+                    # Update the budget spent on this product
+                    current_spent_budget += product_price
+
+                    # Track production
                     products_created += 1
-                    product_created_in_this_round = True
+                else:
+                    # If can't produce more, break the loop for this product
+                    break
+        
+        if show_logs: logging.info(f"Production complete. Total products created by company: {products_created}")
 
-            # If no product could be created in this round, break the loop
-            if not product_created_in_this_round:
-                break
-
-        if show_logs: logging.info(f"Production complete. Total products created by company {self.name}: {products_created}")
 
     def popularity_percent(self, product):
         popularity = {}

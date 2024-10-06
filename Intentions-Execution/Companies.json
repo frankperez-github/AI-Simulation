@@ -23,6 +23,6 @@
 
     "produce":{
         "actions": "self.produce(market_env, show_logs)",
-        "log": "f'{self.name} executed intention to secure subproduct supply.'"
+        "log": "f'{self.name} executed intention to secure produce products.'"
     }
 }
