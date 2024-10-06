@@ -212,3 +212,17 @@ def make_transaction(company, supplier, offer, show_logs):
     if show_logs: logging.info(f"{company.name}'s total budget updated to {company.total_budget}.")
 
     return True
+
+
+def popularity_percent(company, product):
+    popularity = {}
+    for comp in company.beliefs['company_popularity']:
+        if product in company.beliefs['company_popularity'][comp]:
+            popularity[comp] = company.beliefs['company_popularity'][comp][product]
+    
+    maxi = max(popularity.values())
+    mini = min(popularity.values())
+    if maxi == mini: return popularity[company.name]
+    else:
+        popularity_ = ((((popularity[company.name] -mini)/(maxi-mini))*100) + popularity[company.name])/2
+        return popularity_

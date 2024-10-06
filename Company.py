@@ -1,7 +1,7 @@
 import logging
 from BaseAgent import BDI_Agent
 import json
-from utils import calculate_percent, negotiate
+from utils import calculate_percent, negotiate, popularity_percent
 import random
 from Simulation_methods import run_short_simulation
 
@@ -25,6 +25,7 @@ class CompanyAgent(BDI_Agent):
         self.s_offers = {}
         self.agreements = []
         self.total_budget = 0
+
 
     def perceive_environment(self,market_env, show_logs):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
@@ -118,27 +119,32 @@ class CompanyAgent(BDI_Agent):
 
         if show_logs: logging.info(f"Production complete. Total products created by company {self.name}: {products_created}")
 
-    def popularity_percent(self, product):
-        popularity = {}
-        for comp in self.beliefs['company_popularity']:
-            if product in self.beliefs['company_popularity'][comp]:
-                popularity[comp] = self.beliefs['company_popularity'][comp][product]
+    
+    def marketing(self, product, money, unit_price, show_logs):
+        if self.beliefs['company_popularity'][self.name][product] + money/unit_price <= 100: 
+            self.beliefs['company_popularity'][self.name][product] += money/unit_price  
+        else: 
+            self.beliefs['company_popularity'][self.name][product] = 100
+        if show_logs: logging.info(f"{self.name}s {product} now has {self.beliefs['company_popularity'][self.name][product]} popularity ")
         
-        maxi = max(popularity.values())
-        mini = min(popularity.values())
-        if maxi == mini: return popularity[self.name]
-        else:
-            popularity_ = ((((popularity[self.name] -mini)/(maxi-mini))*100) + popularity[self.name])/2
-            return popularity_
-        
-    def plan_investment(self):
+    def adjust_popularity(self, product, quantity, show_logs):
+        if self.beliefs['company_popularity'][self.name][product] - quantity >= 0 : 
+            self.beliefs['company_popularity'][self.name][product] -= quantity  
+        else: 
+            self.beliefs['company_popularity'][self.name][product] = 0
+        if show_logs: logging.info(f"{self.name}s {product} lost {quantity} of popularity due to time. Now has {self.beliefs['company_popularity'][self.name][product]} of popularity")
+
+
+    def plan_investment(self, market_env, show_logs):
         for product in self.product_stock:
             sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock'])
-            popularity = self.popularity_percent(product)
+            self.adjust_popularity(product, market_env.public_variables['lose_popularity'], show_logs)
+            popularity = popularity_percent(self,product)
             investment = self.knowledge.plan_investment(sales, popularity)
-            marketing = self.product_budget[product] * (100 - investment) / 100
-            # FUNCION PARA AUMENTAR MARKETING
-            self.product_budget[product] -= marketing
+            marketing_money = self.product_budget[product] * (100 - investment) / 100
+            if show_logs: logging.info(f"{self.name} decided to invest {investment} dollars in production and {marketing_money} in marketing of {product}")
+            self.marketing(product, marketing_money, market_env.public_variables['marketing_cost'], show_logs)
+            self.product_budget[product] -= marketing_money
 
     def initial_proposals(self):
         for product in self.beliefs['product_prices'][self.name]:

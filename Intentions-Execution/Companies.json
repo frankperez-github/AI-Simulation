@@ -4,7 +4,7 @@
         "log": "f'{self.name} executed intention to designate budgets.'"
     } ,
     "plan_investment":{
-        "actions": "self.plan_investment()",
+        "actions": "self.plan_investment(market_env, show_logs)",
         "log": "f'{self.name} executed intention to plan investment.'"
     },
     "create_proposals":{

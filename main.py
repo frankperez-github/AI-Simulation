@@ -119,13 +119,13 @@ product_prices={
 
 company_popularity={
         "A":{
-                "product_1": 1,"product_2": 1,"product_3": 1
+                "product_1": 9,"product_2": 9,"product_3": 9
             },
         "B":{
-                "product_1": 1,"product_2": 1,"product_3": 1
+                "product_1": 5,"product_2": 9,"product_3": 9
             },
         "C":{
-                "product_1": 1,"product_2": 1,"product_3": 1
+                "product_1": 9,"product_2": 4,"product_3": 6
             }
     }
 
