@@ -21,7 +21,6 @@ class CompanyAgent(BDI_Agent):
         self.subproduct_stock = subproduct_stock
         self.product_stock = product_stock
         self.product_budget = {}
-        self.total_budget = 0
         self.knowledge = knowledge
         self.s_offers = {}
         self.agreements = []
@@ -66,12 +65,55 @@ class CompanyAgent(BDI_Agent):
             market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
             if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
-    def designate_budget(self):
-        for product, revenue in self.revenue.items():
-            self.product_budget[product] = revenue *4/5
+    def designate_budget(self, show_logs):
+        if show_logs:
+            # ALGORITMO GENETICO para definir product_budget
+            pass
+        else:
+            # Use defined product_budget
+            for product, revenue in self.revenue.items():
+                self.product_budget[product] = revenue * 4/5
 
-    def produce(self, market_env):
-        print("Producing...")
+    def produce(self, market_env, show_logs):
+        # Step 1: Reset product stock for all products in self.product_stock
+        self.product_stock = {product: 0 for product in market_env.subproducts.keys()}
+
+        # Step 2: Reset the product quantities in market_env.public_variables['product_prices'] while keeping prices
+        product_prices = market_env.public_variables['product_prices'].get(self.name, {})
+        for product, details in product_prices.items():
+            details['quantity'] = 0  # Reset quantity but keep the price
+
+        products_created = 0
+        while True:
+            product_created_in_this_round = False
+
+            # Step 3: Loop through each product to check if it can be created
+            for product, required_subproducts in market_env.subproducts.items():
+                # Check if there are enough subproducts to create one unit of this product
+                can_produce = all(
+                    self.subproduct_stock.get(subproduct, 0) >= required_quantity
+                    for subproduct, required_quantity in required_subproducts.items()
+                )
+
+                if can_produce:
+                    # Deduct the required subproducts from stock
+                    for subproduct, required_quantity in required_subproducts.items():
+                        self.subproduct_stock[subproduct] -= required_quantity
+
+                    # Step 4: Update self.product_stock and market_env.public_variables['product_prices']
+                    self.product_stock[product] += 1
+                    product_prices[product]['quantity'] += 1
+
+                    # Track that a product was created
+                    products_created += 1
+                    product_created_in_this_round = True
+
+            # If no product could be created in this round, break the loop
+            if not product_created_in_this_round:
+                break
+
+        if show_logs: logging.info(f"Production complete. Total products created by company {self.name}: {products_created}")
+
 
     def plan_investment(self):
         for product in self.product_stock:
@@ -79,7 +121,7 @@ class CompanyAgent(BDI_Agent):
             popularity = self.beliefs['company_popularity'][self.name][product]
             investment = self.knowledge.plan_investment(sales, popularity)
             marketing = self.product_budget[product] * (100 - investment) / 100
-            #FUNCION PARA AUMENTAR MARKETING
+            # FUNCION PARA AUMENTAR MARKETING
             self.product_budget[product] -= marketing
 
     def initial_proposals(self):
@@ -88,7 +130,7 @@ class CompanyAgent(BDI_Agent):
             for sub_product in self.beliefs['subproducts'][product]:
                 cost += self.subproduct_stock[sub_product]['price'] * self.beliefs['subproducts'][product][sub_product]
             
-            units= int(self.product_budget[product]/cost)
+            units = int(self.product_budget[product]/cost)
 
             for sub_product in self.beliefs['subproducts'][product]:
                 if sub_product in self.s_offers:
