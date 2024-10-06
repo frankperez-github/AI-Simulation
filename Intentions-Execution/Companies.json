@@ -1,6 +1,6 @@
 {
     "designate_budgets":{
-        "actions": "self.designate_budget()",
+        "actions": "self.designate_budget(show_logs)",
         "log": "f'{self.name} executed intention to designate budgets.'"
     } ,
     "plan_investment":{
@@ -22,7 +22,7 @@
     },
 
     "produce":{
-        "actions": "self.produce(market_env)",
+        "actions": "self.produce(market_env, show_logs)",
         "log": "f'{self.name} executed intention to secure subproduct supply.'"
     }
 }
