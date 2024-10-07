@@ -1,9 +1,15 @@
 import logging
+import numpy as np
+import multiprocessing
+from deap import creator
+from functools import partial
+from copy import deepcopy
 from BaseAgent import BDI_Agent
 import json
 from utils import calculate_percent, negotiate, popularity_percent
 import random
 from Simulation_methods import run_short_simulation
+from Genetic_Algorithm import Genetic_algorith
 
 des_int_json_file = open('./Desires-Intentions/Companies.json',)
 int_exec_json_file = open('./Intentions-Execution/Companies.json',)
@@ -15,7 +21,7 @@ intentions_execution = json.load(int_exec_json_file)
 logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CompanyAgent(BDI_Agent):
-    def __init__(self, name, knowledge, revenue, subproduct_stock, product_stock):
+    def __init__(self, name, knowledge, revenue, subproduct_stock, product_stock,max_revenue_percent):
         super().__init__(name)
         self.revenue = revenue
         self.subproduct_stock = subproduct_stock
@@ -25,6 +31,11 @@ class CompanyAgent(BDI_Agent):
         self.s_offers = {}
         self.agreements = []
         self.total_budget = 0
+        self.max_revenue_percent=max_revenue_percent
+        self.total_inversion={}
+        self.sales={}
+        self.popularity={}
+        
 
 
     def perceive_environment(self,market_env, show_logs):
@@ -40,6 +51,8 @@ class CompanyAgent(BDI_Agent):
         for company in self.beliefs['company_popularity']:
             for product in self.beliefs['company_popularity'][company]:
                 self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
+                if self.beliefs['company_popularity'][company][product] > 100: self.beliefs['company_popularity'][company][product] = 100
+                if self.beliefs['company_popularity'][company][product] < 0: self.beliefs['company_popularity'][company][product] = 0
         if show_logs: logging.info(f"{self.name} perceived the environment and updated beliefs.")
 
     def form_desires(self, show_logs):
@@ -61,22 +74,40 @@ class CompanyAgent(BDI_Agent):
         eval(execution["actions"])
         if show_logs: logging.info(eval(execution["log"]))
 
-    def adjust_price(self, adjustment, market_env, show_logs):
+    def adjust_price(self,market_env, show_logs):
         for product, price in market_env.public_variables['product_prices'].get(self.name, {}).items():
-            new_price = price['price'] * (1 + adjustment)
-            market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
-            if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
+            if self.product_stock[product]!=0:
+                sales = self.sales[product]
+                popularity = self.popularity[product]
+                price_percent = self.knowledge.adjust_prices(sales, popularity)
+                new_price_percent=self.max_revenue_percent[product]*price_percent/100
+                new_price = self.total_inversion[product]/self.product_stock[product] * (1+new_price_percent/100)
+                market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
+                if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
-    def designate_budget(self, show_logs):
+    def designate_budget(self, show_logs,market_env):
+        
         if show_logs:
             # ALGORITMO GENETICO para definir product_budget
-            for product, revenue in self.revenue.items():
-                self.product_budget[product] = revenue * 4/5
+            budget_distribuitor=Genetic_algorith(fitness_function=partial(self.calcular_fitness,market_env=market_env),
+                                                 individual_function=partial(self.crear_individuo),
+                                                 mut_function=partial(self.mut_rebalance, market_env=market_env), cx_function=partial(self.cx_rebalance))
+            product_budget_percent=budget_distribuitor.optimize(20,30,0.7,0.2)
+            #print(product_budget_percent)
+            budget_distribuitor.close_pool()
+            if 'info' in product_budget_percent:
+                product_budget_percent.pop('info')
+            total=sum(list(self.revenue.values()))
+            product_budget = {}
+            for p in product_budget_percent:
+                product_budget[p]=total*product_budget_percent[p]/100
+            self.product_budget=product_budget
             
-        else:
-            # Use defined product_budget
-            for product, revenue in self.revenue.items():
-                self.product_budget[product] = revenue * 4/5
+        #else:
+        #    for p in self.revenue:
+        #        self.product_budget[p]=self.revenue[p]*4/5
+
+
 
     def produce(self, market_env, show_logs):
         # Step 1: Reset product stock for all products in self.product_stock
@@ -136,15 +167,19 @@ class CompanyAgent(BDI_Agent):
 
 
     def plan_investment(self, market_env, show_logs):
+        self.total_inversion=deepcopy(self.product_budget)
         for product in self.product_stock:
             sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock'])
-            self.adjust_popularity(product, market_env.public_variables['lose_popularity'], show_logs)
+            self.adjust_popularity(product, market_env.public_variables['marketing_config']['lose_popularity'], show_logs)
             popularity = popularity_percent(self,product)
+            self.sales[product]=sales
+            self.popularity[product]=popularity
             investment = self.knowledge.plan_investment(sales, popularity)
             marketing_money = self.product_budget[product] * (100 - investment) / 100
-            if show_logs: logging.info(f"{self.name} decided to invest {investment} dollars in production and {marketing_money} in marketing of {product}")
-            self.marketing(product, marketing_money, market_env.public_variables['marketing_cost'], show_logs)
+            if show_logs: logging.info(f"{self.name} decided to invest {self.product_budget[product] * investment / 100} dollars in production and {marketing_money} in marketing of {product}")
+            self.marketing(product, marketing_money, market_env.public_variables['marketing_config']['marketing_cost'], show_logs)
             self.product_budget[product] -= marketing_money
+            
 
     def initial_proposals(self):
         for product in self.beliefs['product_prices'][self.name]:
@@ -224,5 +259,96 @@ class CompanyAgent(BDI_Agent):
 
         if show_logs: logging.info(f"{self.name} counters the supplier's offer with {new_quantity} units at {new_price} per unit.")
         return new_offer
+
+
+    # Definir la función de fitness (debes reemplazar esto con tu propia lógica de ganancias)
+    def calcular_fitness(self,individuo,market_env):
+        if 'info' in individuo:
+            individuo.pop('info')
+        prediction= run_short_simulation(market_env,self.name,deepcopy(individuo),steps=1)
+        individuo['info']=prediction
+        return sum(list(prediction.values())),
+
+
+    def crear_individuo(self):
+        indiv={}
+        for product in self.revenue:
+            indiv[product]=random.uniform(0, 1)
+        total = sum(list(indiv.values()))
+        for p in indiv:
+            indiv[p]= indiv[p]*100/total
+        
+        return creator.Individual(indiv)
+
+
+
+    # Mutación personalizada: redistribuye el presupuesto entre dos productos
+    def mut_rebalance(self,individual,market_env):
+        ind_copy=deepcopy(individual)
+        self.calcular_fitness(ind_copy,market_env)
+        min_val=float('inf')
+        min_p=None
+        for p in ind_copy:
+            if p !='info':
+                if ind_copy[p]==0: ind_copy[p]=1
+                if ind_copy['info'][p] /ind_copy[p]<min_val:
+                    min_val=ind_copy['info'][p] /ind_copy[p]
+                    min_p=[p]
+                if ind_copy['info'][p] /ind_copy[p]==min_val:
+                    min_val=ind_copy['info'][p] /ind_copy[p]
+                    min_p.append(p)
+        if len(min_p)>0:
+            product=random.choice(min_p)
+        individual[product]=0
+        return (individual,)
+
+        
+
+
+    # Cruce personalizado: mezcla de porcentajes asegurando que la suma sea 100
+    def cx_rebalance(self,ind1, ind2):
+
+        ind1_copy=deepcopy(ind1)
+        ind2_copy=deepcopy(ind2)
+        for p in ind1:
+            if p !='info':
+                if ind1_copy[p]==0: ind1_copy[p]=1
+                if ind2_copy[p]==0: ind2_copy[p]=1
+                if ind1_copy['info'][p] /ind1_copy[p] <= ind2_copy['info'][p] /ind2_copy[p]:
+                    ind1[p] = ind2[p]
+                        
+        total1 = sum([ind1[p] for p in ind1 if p!='info'])
+        if total1 > 0:
+            for p in ind1:
+                if p != 'info': 
+                    ind1[p] = ind1[p] * 100 / total1
+        else:
+            # Repartir uniformemente si la suma es cero
+            for p in ind1:
+                if p != 'info':
+                    ind1[p] = 100/(len(ind1)-1)
+
+
+        alpha = random.random()
+        if alpha<0.5: alpha=1-alpha
+        for p in ind1_copy:
+            if p!='info':
+                if ind1.fitness.values[0] > ind2.fitness.values[0]:
+                    ind2[p] = alpha * ind1[p] + (1 - alpha) * ind2[p]
+                else:
+                    ind2[p] = alpha * ind2[p] + (1 - alpha) * ind1[p]
+            
+        total2 = sum([ind2[p] for p in ind2 if p!='info'])
+        if total2 > 0:
+            for p in ind2:
+                if p != 'info': 
+                    ind2[p] = ind2[p] * 100 / total2
+        else:
+            # Repartir uniformemente si la suma es cero
+            for p in ind2:
+                if p != 'info':
+                    ind2[p] = 100/(len(ind2)-1)
+
+        return ind1, ind2
 
 

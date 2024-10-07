@@ -1,6 +1,6 @@
 {
     "designate_budgets":{
-        "actions": "self.designate_budget(show_logs)",
+        "actions": "self.designate_budget(show_logs,market_env)",
         "log": "f'{self.name} executed intention to designate budgets.'"
     } ,
     "plan_investment":{
@@ -17,7 +17,7 @@
         "log": "f'{self.name} executed intention to secure subproduct supply.'"
     },
     "adjust_prices":{
-        "actions": "self.adjust_price(-0.1,market_env, show_logs)",
+        "actions": "self.adjust_price(market_env, show_logs)",
         "log": "f'{self.name} executed intention to lower prices.'"
     },
 
