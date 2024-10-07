@@ -82,18 +82,21 @@ def negotiate(company, suppliers, show_logs):
         target_quantity = offer_details['units']
         target_price = offer_details['price']
 
-        if(target_quantity == 0): continue
+        if target_quantity == 0:
+            continue
         
         best_offer = None
         best_supplier = None
 
         for supplier_name, subproducts in company.beliefs['subproduct_suppliers'].items():
             supplier = suppliers[supplier_name]
-            if show_logs: logging.info(f"{company.name} is negotiating with {supplier_name} for {subproduct}.")
+            if show_logs:
+                logging.info(f"{company.name} is negotiating with {supplier_name} for {subproduct}.")
             
             offer = {
                 'product': subproduct,
                 'quantity': target_quantity,
+                'price': target_price  # Set initial price for negotiation
             }
 
             final_offer = None
@@ -101,55 +104,65 @@ def negotiate(company, suppliers, show_logs):
             previous_offer = None
             previous_counteroffer = None
 
+            # Flag to track whose turn it is to evaluate
+            is_company_turn = False
+
             while True:
-                # Step 1: Supplier evaluates the company's initial offer
-                counteroffer = supplier.evaluate_offer(offer, show_logs)
+                # Supplier's turn to evaluate the initial offer
+                if not is_company_turn:
+                    counteroffer = supplier.evaluate_offer(offer, show_logs)
 
-                offer["price"] = target_price
+                    if counteroffer is None:
+                        if show_logs:
+                            logging.info(f"{supplier.name} could not make an offer for {subproduct}.")
+                        break
 
-                if counteroffer is None:
-                    if show_logs: logging.info(f"{supplier.name} could not make an offer for {subproduct}.")
-                    break
+                    # Check for negotiation loop
+                    if previous_offer == offer and previous_counteroffer == counteroffer:
+                        if show_logs:
+                            logging.info(f"Negotiation loop detected for {subproduct}. Terminating negotiation.")
+                        final_offer = None
+                        break
 
-                # Step 2: Check if negotiation is stuck in a loop
-                if previous_offer == offer and previous_counteroffer == counteroffer:
-                    if show_logs: logging.info(f"Negotiation loop detected for {subproduct}. Terminating negotiation.")
-                    final_offer = None
-                    break
+                    # Store the current offer and counteroffer for loop detection
+                    previous_offer = offer
+                    previous_counteroffer = counteroffer
 
+                    is_company_turn = True  # Toggle turn
 
-                # Step 3: Company evaluates the supplier's counteroffer
-                new_offer = company.evaluate_counteroffer(offer, counteroffer, show_logs)
+                else:
+                    # Company evaluates the supplier's counteroffer
+                    new_offer = company.evaluate_counteroffer(offer, counteroffer, show_logs)
 
-                if new_offer == True:
-                    if show_logs: logging.info(f"Negotiation successful! {company.name} and {supplier.name} reached an agreement for {subproduct}.")
-                    final_offer = counteroffer
-                    break  # Agreement reached, exit negotiation loop
-                
-                if new_offer == False:
-                    if show_logs: logging.info(f"Negotiation failed for {subproduct} with {supplier.name}.")
-                    final_offer = None
-                    break  # Exit negotiation loop due to failure
-                
-                # Step 4: Supplier evaluates the new offer from the company (new counter-counteroffer)
-                counteroffer = supplier.evaluate_counteroffer(offer, new_offer, show_logs)
+                    if new_offer is True:
+                        if show_logs:
+                            logging.info(f"Negotiation successful! {company.name} and {supplier.name} reached an agreement for {subproduct}.")
+                        final_offer = counteroffer
+                        break  # Agreement reached, exit negotiation loop
 
-                if counteroffer == True:
-                    if show_logs: logging.info(f"{supplier.name} accepts the new offer for {subproduct}.")
-                    final_offer = new_offer
-                    break  # Supplier accepts the offer
-                
-                if counteroffer == False:
-                    if show_logs: logging.info(f"Negotiation failed from {supplier.name}'s side for {subproduct}.")
-                    final_offer = None
-                    break  # Supplier rejects the offer and negotiation fails
+                    if new_offer is False:
+                        if show_logs:
+                            logging.info(f"Negotiation failed for {subproduct} with {supplier.name}.")
+                        final_offer = None
+                        break  # Exit negotiation loop due to failure
 
-                # If the negotiation keeps going, set offer for next round
-                offer = new_offer
+                    # Supplier evaluates the new offer from the company
+                    counteroffer = supplier.evaluate_counteroffer(offer, new_offer, show_logs)
 
-                # Store the current offer and counteroffer for comparison in the next iteration
-                previous_offer = offer
-                previous_counteroffer = counteroffer
+                    if counteroffer is True:
+                        if show_logs:
+                            logging.info(f"{supplier.name} accepts the new offer for {subproduct}.")
+                        final_offer = new_offer
+                        break  # Supplier accepts the offer
+
+                    if counteroffer is False:
+                        if show_logs:
+                            logging.info(f"Negotiation failed from {supplier.name}'s side for {subproduct}.")
+                        final_offer = None
+                        break  # Supplier rejects the offer and negotiation fails
+
+                    # Update the offer for the next round
+                    offer = new_offer
 
             # After negotiation loop ends, check for best offer
             if final_offer and (best_offer is None or final_offer['price'] < best_offer['price']):
@@ -163,11 +176,14 @@ def negotiate(company, suppliers, show_logs):
                 'supplier': best_supplier,
                 'offer': best_offer
             }
-            if show_logs: logging.info(f"Best offer for {subproduct}: {best_offer['quantity']} units at {best_offer['price']} per unit from {best_supplier}.")
+            if show_logs:
+                logging.info(f"Best offer for {subproduct}: {best_offer['quantity']} units at {best_offer['price']} per unit from {best_supplier}.")
         else:
-            if show_logs: logging.info(f"No successful negotiation for {subproduct}.")
+            if show_logs:
+                logging.info(f"No successful negotiation for {subproduct}.")
     
     return best_offers
+
 
 
 

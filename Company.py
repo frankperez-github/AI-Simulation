@@ -293,7 +293,6 @@ class CompanyAgent(BDI_Agent):
             return new_offer
 
 
-    # Definir la función de fitness (debes reemplazar esto con tu propia lógica de ganancias)
     def calcular_fitness(self,individuo,market_env):
         if 'info' in individuo:
             individuo.pop('info')
