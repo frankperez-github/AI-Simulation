@@ -1,0 +1,5 @@
+{
+    "price": "ctrl.Antecedent(np.arange(0, 101, 1), 'price')",
+    "quantity": "ctrl.Antecedent(np.arange(0, 101, 1), 'quantity')",
+    "acceptability": "ctrl.Consequent(np.arange(0, 101, 1), 'acceptability')"
+}

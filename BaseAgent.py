@@ -1,23 +1,23 @@
 class BDI_Agent:
-    def __init__(self, name, market_env):
+    def __init__(self, name):
         self.name = name
-        self.market_env = market_env
         self.beliefs = {}
-        self.desires = {}
+        self.desires = []
         self.intentions = []
 
-    def perceive_environment(self):
+    def perceive_environment(self, show_logs=True):
         raise NotImplementedError("Este método debe ser implementado por las clases derivadas.")
 
-    def form_desires(self):
+    def form_desires(self, show_logs=True):
         raise NotImplementedError("Este método debe ser implementado por las clases derivadas.")
 
-    def plan_intentions(self):
+    def plan_intentions(self, show_logs=True):
         raise NotImplementedError("Este método debe ser implementado por las clases derivadas.")
 
-    def act(self):
+    def act(self,market_env, show_logs=True):
         for intention in self.intentions:
-            self.execute_intention(intention)
-
-    def execute_intention(self, intention):
+            self.execute_intention(intention,market_env, show_logs)
+        self.intentions=[]
+            
+    def execute_intention(self, intention, show_logs=True):
         raise NotImplementedError("Este método debe ser implementado por las clases derivadas.")
