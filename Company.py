@@ -92,7 +92,7 @@ class CompanyAgent(BDI_Agent):
             budget_distribuitor=Genetic_algorith(fitness_function=partial(self.calcular_fitness,market_env=market_env),
                                                  individual_function=partial(self.crear_individuo),
                                                  mut_function=partial(self.mut_rebalance, market_env=market_env), cx_function=partial(self.cx_rebalance))
-            product_budget_percent=budget_distribuitor.optimize(20,30,0.7,0.2)
+            product_budget_percent=budget_distribuitor.optimize(50,100,0.7,0.2)
             #print(product_budget_percent)
             budget_distribuitor.close_pool()
             if 'info' in product_budget_percent:
@@ -160,7 +160,7 @@ class CompanyAgent(BDI_Agent):
 
                     # Update product stock and product prices
                     self.product_stock[product] += 1
-                    product_prices[product]['quantity'] += 1
+                    product_prices[product]['stock'] += 1
 
                     # Update the budget spent on this product
                     current_spent_budget += product_price

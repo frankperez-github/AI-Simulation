@@ -35,8 +35,8 @@ logging.basicConfig(
 n_households = 10
 
 # Parámetros del modelo
-initial_min_budget = 600
-initial_mean_budget = 1500
+initial_min_budget = 1500
+initial_mean_budget = 3000
 count_products = 3
 #base_price = {}
 #change_in_price_pct = {}
@@ -71,7 +71,7 @@ product_stock={
     'product_1':200,'product_2':200,'product_3':200
 }
 revenue={
-    'product_1':6000,'product_2':6000,'product_3':6000
+    'product_1':12000,'product_2':12000,'product_3':12000
 }
 subproduct_stock={
     "product_1":{"stock":0,"price":30},
@@ -79,9 +79,9 @@ subproduct_stock={
     "product_3":{"stock":0,"price":30}
 }
 max_revenue_percent={
-    "product_1":30,
-    "product_2":30,
-    "product_3":30
+    "product_1":100,
+    "product_2":100,
+    "product_3":100
 }
 
 companies = {"A":CompanyAgent("A",companies_knowledge, deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock),deepcopy(max_revenue_percent)),
@@ -89,9 +89,9 @@ companies = {"A":CompanyAgent("A",companies_knowledge, deepcopy(revenue),deepcop
     "C":CompanyAgent("C", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock),deepcopy(max_revenue_percent))}
 
 products_supplier={
-               'product_1': {'quantity': 100, 'min_price': 5.0},
-               'product_2': {'quantity': 200, 'min_price': 10.0},
-               'product_3': {'quantity': 100, 'min_price': 5.0},
+               'product_1': {'quantity': 5000, 'min_price': 30},
+               'product_2': {'quantity': 5000, 'min_price': 30},
+               'product_3': {'quantity': 5000, 'min_price': 30},
        }
 
 suppliers = {
@@ -105,31 +105,31 @@ for customer in Customers:
 
 product_prices={
     "A":{
-            "product_1":{"stock":100,"price":60},
-            "product_2":{"stock":100,"price":60},
-            "product_3":{"stock":100,"price":60}
+            "product_1":{"stock":0,"price":60},
+            "product_2":{"stock":0,"price":60},
+            "product_3":{"stock":0,"price":60}
         },
     "B":{
-            "product_1":{"stock":100,"price":60},
-            "product_2":{"stock":100,"price":60},
-            "product_3":{"stock":100,"price":60}
+            "product_1":{"stock":0,"price":60},
+            "product_2":{"stock":0,"price":60},
+            "product_3":{"stock":0,"price":60}
         },
     "C":{
-            "product_1":{"stock":100,"price":60},
-            "product_2":{"stock":100,"price":60},
-            "product_3":{"stock":100,"price":60}
+            "product_1":{"stock":0,"price":60},
+            "product_2":{"stock":0,"price":60},
+            "product_3":{"stock":0,"price":60}
         }
 }
 
 company_popularity={
         "A":{
-                "product_1": 9,"product_2": 9,"product_3": 9
+                "product_1": 80,"product_2": 80,"product_3": 80
             },
         "B":{
-                "product_1": 9,"product_2": 9,"product_3": 9
+                "product_1": 80,"product_2": 80,"product_3": 80
             },
         "C":{
-                "product_1": 9,"product_2": 9,"product_3": 9
+                "product_1": 80,"product_2": 80,"product_3": 80
             }
     }
 
@@ -138,7 +138,7 @@ subproducts={"product_1":{"product_1":1},"product_2":{"product_2":1},"product_3"
 subproduct_suppliers={"Suministrador1":["product1","product2","product3"]}
 
 
-marketing_config = {'lose_popularity': 25, 'marketing_cost' : 30, 'popularity_by_sales': 0.1}
+marketing_config = {'lose_popularity': 15, 'marketing_cost' : 50, 'popularity_by_sales': 0.1}
 
 market_env= MarketEnvironment(
     subproducts_suppliers=subproduct_suppliers,
