@@ -80,8 +80,7 @@ class CompanyAgent(BDI_Agent):
     def produce(self, market_env, show_logs):
         """
         Produce products based on available subproducts in self.subproduct_stock and the allocated budget for each product.
-        The goal is to produce until the product's allocated budget (from self.product_budget) is covered or the available 
-        subproducts run out.
+        The goal is to produce until the product's allocated budget (from self.product_budget) is covered or the available subproducts run out.
         
         :param market_env: Environment that contains product-subproduct dependencies
         """
@@ -93,9 +92,9 @@ class CompanyAgent(BDI_Agent):
         for product, details in product_prices.items():
             details['quantity'] = 0  # Reset quantity but keep the price
 
-        # Step 3: Calculate the maximum budget for each product
+        # Step 3: Save the maximum budget for each product
         product_max_budget = {
-            product: self.product_budget[product] * self.total_budget for product in self.product_budget
+            product: self.product_budget[product] for product in self.product_budget
         }
 
         products_created = 0
