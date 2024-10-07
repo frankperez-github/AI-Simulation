@@ -226,63 +226,71 @@ class CompanyAgent(BDI_Agent):
         negotiate(self, market_env.public_variables["suppliers"], show_logs)
 
     def evaluate_counteroffer(self, offer, counteroffer, show_logs):
-        """
-        The company evaluates the supplier's counteroffer and decides whether to accept it or propose a new offer.
-        This version checks the budget allocated for the specific product before evaluating or making a counteroffer.
-        
-        :param offer: The company's original offer
-        :param counteroffer: The supplier's counteroffer
-        :return: True if agreement is reached, otherwise a new counteroffer
-        """
-        product = offer['product']
-        
-        product_budget_info = self.s_offers.get(product)
-        
-        if not product_budget_info:
-            if show_logs: logging.warning(f"No budget information available for {product}.")
-            return False
+            """
+            The company evaluates the supplier's counteroffer and decides whether to accept it or propose a new offer.
+            This version checks the budget allocated for the specific product before evaluating or making a counteroffer.
+            
+            :param offer: The company's original offer
+            :param counteroffer: The supplier's counteroffer
+            :param show_logs: Boolean flag to control logging output
+            :return: True if agreement is reached, otherwise a new counteroffer within budget constraints
+            """
+            product = offer['product']
+            
+            # Retrieve budget information for the product
+            product_budget_info = self.s_offers.get(product)
+            if not product_budget_info:
+                if show_logs: logging.warning(f"No budget information available for {product}.")
+                return False
 
-        allocated_quantity = product_budget_info['units']
-        allocated_price = product_budget_info['price']
-        allocated_budget = allocated_quantity * allocated_price
+            # Calculate allocated budget based on quantity and price
+            allocated_quantity = product_budget_info['units']
+            allocated_price = product_budget_info['price']
+            allocated_budget = allocated_quantity * allocated_price
 
-        total_cost = counteroffer['price'] * counteroffer['quantity']
-        
-        if counteroffer is None:
-            if show_logs: logging.info(f"{self.name} did not receive a valid counteroffer from the supplier.")
-            return False
+            # Calculate total cost of the counteroffer
+            total_cost = counteroffer['price'] * counteroffer['quantity']
+            
+            if counteroffer is None:
+                if show_logs: logging.info(f"{self.name} did not receive a valid counteroffer from the supplier.")
+                return False
 
-        if show_logs: logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
+            if show_logs:
+                logging.info(f"{self.name} received a counteroffer: {counteroffer['quantity']} units of {counteroffer['product']} at {counteroffer['price']} per unit.")
 
-        if total_cost > allocated_budget:
-            if show_logs: logging.warning(f"{self.name} does not have enough budget to accept the counteroffer for {product}.")
-            return False
-        
-        price_percentage = (counteroffer['price'] - offer['price']) / offer['price'] * 100
-        quantity_percentage = (counteroffer['quantity'] / offer['quantity']) * 100
+            # If total cost of counteroffer exceeds allocated budget, adjust counteroffer to fit within budget
+            if total_cost > allocated_budget:
+                affordable_quantity = allocated_budget // counteroffer['price']  # Maximum quantity within budget
+                new_offer = {
+                    'product': product,
+                    'quantity': affordable_quantity,
+                    'price': counteroffer['price']
+                }
+                if show_logs: logging.warning(f"{self.name} cannot afford {counteroffer['quantity']} units at {counteroffer['price']} per unit.")
+                if show_logs: logging.info(f"{self.name} counters with {affordable_quantity} units at {counteroffer['price']} per unit (within budget).")
+                return new_offer
 
-        acceptability = self.knowledge.evaluate_offer(price_percentage, quantity_percentage)
+            # Calculate acceptability of the counteroffer
+            price_percentage = (counteroffer['price'] - offer['price']) / offer['price'] * 100
+            quantity_percentage = (counteroffer['quantity'] / offer['quantity']) * 100
+            acceptability = self.knowledge.evaluate_offer(price_percentage, quantity_percentage)
 
-        if acceptability > 75:
-            if show_logs: logging.info(f"{self.name} accepts the counteroffer.")
-            return True
+            # If counteroffer is acceptable, agree to it
+            if acceptability > 75:
+                if show_logs: logging.info(f"{self.name} accepts the counteroffer.")
+                return True
 
-        new_price = (offer['price'] + counteroffer['price']) / 2
-        new_quantity = (offer['quantity'] + counteroffer['quantity']) / 2
-        new_total_cost = new_price * new_quantity
+            # Otherwise, propose a new counteroffer within budget constraints
+            new_price = (offer['price'] + counteroffer['price']) / 2
+            new_quantity = min((offer['quantity'] + counteroffer['quantity']) / 2, allocated_budget // new_price)
+            new_offer = {
+                'product': product,
+                'quantity': new_quantity,
+                'price': new_price
+            }
 
-        if new_total_cost > allocated_budget:
-            if show_logs: logging.warning(f"{self.name} does not have enough budget to propose the counteroffer for {product}.")
-            return False
-
-        new_offer = {
-            'product': offer['product'],
-            'quantity': new_quantity,
-            'price': new_price
-        }
-
-        if show_logs: logging.info(f"{self.name} counters the supplier's offer with {new_quantity} units at {new_price} per unit.")
-        return new_offer
+            if show_logs: logging.info(f"{self.name} counters the supplier's offer with {new_quantity} units at {new_price} per unit.")
+            return new_offer
 
 
     # Definir la función de fitness (debes reemplazar esto con tu propia lógica de ganancias)
