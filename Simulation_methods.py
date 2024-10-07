@@ -27,12 +27,12 @@ def run_short_simulation(current_env, company_name, company_product_budget, step
     # Create a deep copy of current_env and update the product_budget for selected company
     market_copy = copy.deepcopy(current_env)
     
-    # total_money = sum(list(market_copy.public_variables["companies"][company_name].revenue.values()))*4/5
-    # product_money={}
-    # for product in company_product_budget:
-    #     product_money[product]= total_money*company_product_budget[product]/100
+    total_money = sum(list(market_copy.public_variables["companies"][company_name].revenue.values()))*4/5
+    product_money={}
+    for product in company_product_budget:
+        product_money[product]= total_money*company_product_budget[product]/100
     
-    market_copy.public_variables["companies"][company_name].product_budget = company_product_budget
+    market_copy.public_variables["companies"][company_name].product_budget = total_money
 
     company = market_copy.public_variables['companies'][company_name]
     company.beliefs = {}
