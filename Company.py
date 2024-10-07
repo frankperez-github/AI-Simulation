@@ -35,24 +35,25 @@ class CompanyAgent(BDI_Agent):
         self.total_inversion={}
         self.sales={}
         self.popularity={}
+        self.predicted_revenue = {}
         
 
 
     def perceive_environment(self,market_env, show_logs):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
 
-        for prod in self.beliefs['product_prices'][self.name].keys():
-            self.product_stock[prod] = self.beliefs['product_prices'][self.name][prod]["stock"]
+        #for prod in self.beliefs['product_prices'][self.name].keys():
+            #self.product_stock[prod] = self.beliefs['product_prices'][self.name][prod]["stock"]
 
         self.beliefs['subproducts'] = market_env.public_variables['subproducts']
 
         self.beliefs['subproduct_suppliers'] = market_env.public_variables['subproduct_suppliers']
         self.beliefs['company_popularity'] = market_env.public_variables['company_popularity']
-        for company in self.beliefs['company_popularity']:
-            for product in self.beliefs['company_popularity'][company]:
-                self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
-                if self.beliefs['company_popularity'][company][product] > 100: self.beliefs['company_popularity'][company][product] = 100
-                if self.beliefs['company_popularity'][company][product] < 0: self.beliefs['company_popularity'][company][product] = 0
+        #for company in self.beliefs['company_popularity']:
+        #    for product in self.beliefs['company_popularity'][company]:
+        #        self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
+        #        if self.beliefs['company_popularity'][company][product] > 100: self.beliefs['company_popularity'][company][product] = 100
+        #        if self.beliefs['company_popularity'][company][product] < 0: self.beliefs['company_popularity'][company][product] = 0
         if show_logs: logging.info(f"{self.name} perceived the environment and updated beliefs.")
 
     def form_desires(self, show_logs):
@@ -81,7 +82,7 @@ class CompanyAgent(BDI_Agent):
                 popularity = self.popularity[product]
                 price_percent = self.knowledge.adjust_prices(sales, popularity)
                 new_price_percent=self.max_revenue_percent[product]*price_percent/100
-                new_price = self.total_inversion[product]/self.product_stock[product] * (1+new_price_percent/100)
+                new_price = int(self.total_inversion[product]/self.product_stock[product] * (1+new_price_percent/100))
                 market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
                 if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
@@ -92,11 +93,12 @@ class CompanyAgent(BDI_Agent):
             budget_distribuitor=Genetic_algorith(fitness_function=partial(self.calcular_fitness,market_env=market_env),
                                                  individual_function=partial(self.crear_individuo),
                                                  mut_function=partial(self.mut_rebalance, market_env=market_env), cx_function=partial(self.cx_rebalance))
-            product_budget_percent=budget_distribuitor.optimize(50,100,0.7,0.2)
-            #print(product_budget_percent)
+            product_budget_percent=budget_distribuitor.optimize(50,100,0.7,0)
             budget_distribuitor.close_pool()
             if 'info' in product_budget_percent:
+                self.predicted_revenue = deepcopy(product_budget_percent['info'])
                 product_budget_percent.pop('info')
+            
             total=sum(list(self.revenue.values()))
             product_budget = {}
             for p in product_budget_percent:
@@ -122,32 +124,27 @@ class CompanyAgent(BDI_Agent):
         # Step 2: Reset the product quantities in market_env.public_variables['product_prices'] while keeping prices
         product_prices = market_env.public_variables['product_prices'].get(self.name, {})
         for product, details in product_prices.items():
-            details['quantity'] = 0  # Reset quantity but keep the price
+            details['stock'] = 0  # Reset quantity but keep the price
 
         # Step 3: Save the maximum budget for each product
-        product_max_budget = {
-            product: self.product_budget[product] for product in self.product_budget
-        }
+        #product_max_budget = {
+        #    product: self.product_budget[product] for product in self.product_budget
+        #}
 
         products_created = 0
         
         # Step 4: Sort products by revenue (highest to lowest)
-        sorted_products = sorted(self.revenue.items(), key=lambda x: x[1], reverse=True)
-        
-        # Step 5: Produce products based on revenue priority and budget limit
-        for product, revenue in sorted_products:
+        sorted_products = sorted(self.predicted_revenue, key=lambda x: self.predicted_revenue[x], reverse=True) if show_logs else sorted(self.revenue, key=lambda x: self.revenue[x], reverse=True)
+        # Step 5: Produce products based on revenue priority and budgeself.predictself.predicted_revenue.items()ed_revenue.items()t limit
+        for product in sorted_products:
             if product not in self.product_budget:
                 continue  # Skip if product does not have an allocated budget
             
-            max_budget = product_max_budget[product]
-            current_spent_budget = 0
-            product_price = product_prices.get(product, {}).get('price', 0)
-
             # Check the subproduct requirements for the current product
             required_subproducts = market_env.public_variables["subproducts"].get(product, {})
 
             # Produce as many units as possible until budget or subproducts run out
-            while current_spent_budget + product_price <= max_budget:
+            while True:
                 can_produce = all(
                     self.subproduct_stock.get(subproduct, 0)["stock"] >= required_quantity
                     for subproduct, required_quantity in required_subproducts.items()
@@ -161,16 +158,15 @@ class CompanyAgent(BDI_Agent):
                     # Update product stock and product prices
                     self.product_stock[product] += 1
                     product_prices[product]['stock'] += 1
-
-                    # Update the budget spent on this product
-                    current_spent_budget += product_price
-
                     # Track production
                     products_created += 1
                 else:
                     # If can't produce more, break the loop for this product
                     break
+
         
+        for p in self.revenue:
+            self.revenue[p]=0
         if show_logs: logging.info(f"Production complete. Total products created by company: {products_created}")
 
 
@@ -180,29 +176,32 @@ class CompanyAgent(BDI_Agent):
             self.beliefs['company_popularity'][self.name][product] += money/unit_price  
         else: 
             self.beliefs['company_popularity'][self.name][product] = 100
-        if show_logs: logging.info(f"{self.name}s {product} now has {self.beliefs['company_popularity'][self.name][product]} popularity ")
+        if show_logs: logging.info(f"{self.name}'s {product} now has {self.beliefs['company_popularity'][self.name][product]} popularity ")
         
     def adjust_popularity(self, product, quantity, show_logs):
         if self.beliefs['company_popularity'][self.name][product] - quantity >= 0 : 
             self.beliefs['company_popularity'][self.name][product] -= quantity  
         else: 
             self.beliefs['company_popularity'][self.name][product] = 0
-        if show_logs: logging.info(f"{self.name}s {product} lost {quantity} of popularity due to time. Now has {self.beliefs['company_popularity'][self.name][product]} of popularity")
+        if show_logs: logging.info(f"{self.name}'s {product} lost {quantity} of popularity due to time. Now has {self.beliefs['company_popularity'][self.name][product]} of popularity")
 
 
     def plan_investment(self, market_env, show_logs):
         self.total_inversion=deepcopy(self.product_budget)
         for product in self.product_stock:
+            if show_logs:
+                print("stock "+str(self.product_stock[product]))
+                print("now "+str(self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock']))
             sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock'])
-            self.adjust_popularity(product, market_env.public_variables['marketing_config']['lose_popularity'], show_logs)
+            #self.adjust_popularity(product, market_env.public_variables['marketing_config']['lose_popularity'], show_logs)
             popularity = popularity_percent(self,product)
             self.sales[product]=sales
             self.popularity[product]=popularity
             investment = self.knowledge.plan_investment(sales, popularity)
             marketing_money = self.product_budget[product] * (100 - investment) / 100
             if show_logs: logging.info(f"{self.name} decided to invest {self.product_budget[product] * investment / 100} dollars in production and {marketing_money} in marketing of {product}")
-            self.marketing(product, marketing_money, market_env.public_variables['marketing_config']['marketing_cost'], show_logs)
-            self.product_budget[product] -= marketing_money
+            #self.marketing(product, marketing_money, market_env.public_variables['marketing_config']['marketing_cost'], show_logs)
+            #self.product_budget[product] -= marketing_money
             
 
     def initial_proposals(self):
