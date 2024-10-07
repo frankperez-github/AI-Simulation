@@ -78,11 +78,15 @@ subproduct_stock={
     "product_2":{"stock":0,"price":30},
     "product_3":{"stock":0,"price":30}
 }
+max_revenue_percent={
+    "product_1":30,
+    "product_2":30,
+    "product_3":30
+}
 
-
-companies = {"A":CompanyAgent("A",companies_knowledge, deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
-    "B":CompanyAgent("B", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock)),
-    "C":CompanyAgent("C", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock))}
+companies = {"A":CompanyAgent("A",companies_knowledge, deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock),deepcopy(max_revenue_percent)),
+    "B":CompanyAgent("B", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock),deepcopy(max_revenue_percent)),
+    "C":CompanyAgent("C", companies_knowledge,deepcopy(revenue),deepcopy(subproduct_stock),deepcopy(product_stock),deepcopy(max_revenue_percent))}
 
 products_supplier={
                'product_1': {'quantity': 100, 'min_price': 5.0},
@@ -119,13 +123,13 @@ product_prices={
 
 company_popularity={
         "A":{
-                "product_1": 1,"product_2": 1,"product_3": 1
+                "product_1": 9,"product_2": 9,"product_3": 9
             },
         "B":{
-                "product_1": 1,"product_2": 1,"product_3": 1
+                "product_1": 9,"product_2": 9,"product_3": 9
             },
         "C":{
-                "product_1": 1,"product_2": 1,"product_3": 1
+                "product_1": 9,"product_2": 9,"product_3": 9
             }
     }
 
@@ -134,7 +138,7 @@ subproducts={"product_1":{"product_1":1},"product_2":{"product_2":1},"product_3"
 subproduct_suppliers={"Suministrador1":["product1","product2","product3"]}
 
 
-
+marketing_config = {'lose_popularity': 25, 'marketing_cost' : 30, 'popularity_by_sales': 0.1}
 
 market_env= MarketEnvironment(
     subproducts_suppliers=subproduct_suppliers,
@@ -143,8 +147,9 @@ market_env= MarketEnvironment(
     companies=companies,
     suppliers=suppliers,
     clients=cust,
-    product_prices=product_prices
+    product_prices=product_prices,
+    marketing_config=marketing_config
 )
 
 
-run_simulation(market_env, short_version=False)
+run_simulation(market_env)

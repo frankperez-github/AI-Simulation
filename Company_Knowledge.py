@@ -26,3 +26,12 @@ class Company_Knowledge(Knowledge):
         self.simulation.compute()
 
         return self.simulation.output['acceptability']
+    
+    def adjust_prices(self, sales, popularity):
+        self.simulation.input['sales'] = sales 
+        self.simulation.input['popularity'] = popularity
+        self.simulation.input['price'] = 0
+        self.simulation.input['quantity'] = 0
+        
+        self.simulation.compute()
+        return self.simulation.output['adj_price']
