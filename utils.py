@@ -81,6 +81,8 @@ def negotiate(company, suppliers, show_logs):
     for subproduct, offer_details in company.s_offers.items():
         target_quantity = offer_details['units']
         target_price = offer_details['price']
+
+        if(target_quantity == 0): continue
         
         best_offer = None
         best_supplier = None

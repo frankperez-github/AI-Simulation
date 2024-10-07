@@ -152,4 +152,4 @@ market_env= MarketEnvironment(
 )
 
 
-run_simulation(market_env, short_version=False)
+run_simulation(market_env)
