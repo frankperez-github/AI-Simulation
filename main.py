@@ -3,9 +3,9 @@ from Simulation_settings import set_and_run_simulation
 
 if __name__ == '__main__':
 
-    n_households = 10
+    n_households = 50
     products=["product_1","product_2","product_3"]
-    min_salary = 800
+    min_salary = 600
     mean_salary = 1200
     mean_alpha_quintiles = { i: [0.15, 0.13, 0.12, 0.1, 0.08] for i in range(len(products)) }
     sd_alpha = { i: 0.02 for i in range(len(products)) }

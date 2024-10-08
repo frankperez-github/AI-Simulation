@@ -1,8 +1,10 @@
 import copy
 import math
 import logging
+from copy import deepcopy
 import pandas as pd
 from Environment import MarketEnvironment
+from utils import marketing
 
 
 def run_simulation(market_env:MarketEnvironment, steps=3):
@@ -14,13 +16,28 @@ def run_simulation(market_env:MarketEnvironment, steps=3):
             agent.plan_intentions(show_logs=True)
             agent.act(market_env, show_logs=True)
 
+        for company, product, money, show_logs in market_env.hidden_variables['marketing_stonks']:
+            marketing(company, product, money, show_logs, market_env)
+
+        market_env.hidden_variables['marketing_stonks'] = []
+
         for agent in list(market_env.public_variables['clients'].values()):
             agent.perceive_environment(market_env, show_logs=True)
             agent.form_desires(show_logs=True)
             agent.plan_intentions(show_logs=True)
             agent.act(market_env, show_logs=True)
-            
+        
+        for company in market_env.public_variables['company_popularity']:
+            for product in market_env.public_variables['company_popularity'][company]:
+                quantity = market_env.public_variables['marketing_config']['lose_popularity']
+                if market_env.public_variables['company_popularity'][company][product] - quantity >= 0 : 
+                    market_env.public_variables['company_popularity'][company][product] = int(market_env.public_variables['company_popularity'][company][product] - quantity)
+                else: 
+                    market_env.public_variables['company_popularity'][company][product] = 0
+                if show_logs: logging.info(f"{company}'s {product} lost {quantity} of popularity due to time. Now has {market_env.public_variables['company_popularity'][company][product]} of popularity")
 
+        
+        market_env.public_variables['product_prices_old']=deepcopy(market_env.public_variables['product_prices'])
         log_environment_data(market_env)
 
 def run_short_simulation(current_env, company_name, company_product_budget, steps=1):
