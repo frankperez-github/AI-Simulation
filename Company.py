@@ -93,12 +93,15 @@ class CompanyAgent(BDI_Agent):
             budget_distribuitor=Genetic_algorith(fitness_function=partial(self.calcular_fitness,market_env=market_env),
                                                  individual_function=partial(self.crear_individuo),
                                                  mut_function=partial(self.mut_rebalance, market_env=market_env), cx_function=partial(self.cx_rebalance))
-            product_budget_percent=budget_distribuitor.optimize(50,100,0.7,0)
+            product_budget_percent=budget_distribuitor.optimize(30,20,0.7,0)
             budget_distribuitor.close_pool()
             if 'info' in product_budget_percent:
                 self.predicted_revenue = deepcopy(product_budget_percent['info'])
                 product_budget_percent.pop('info')
             
+            for p in self.revenue:
+                self.revenue[p]*=4/5
+
             total=sum(list(self.revenue.values()))
             product_budget = {}
             for p in product_budget_percent:
@@ -151,8 +154,10 @@ class CompanyAgent(BDI_Agent):
                 )
 
                 if can_produce:
+
                     # Deduct the required subproducts from stock
                     for subproduct, required_quantity in required_subproducts.items():
+                        self.total_inversion[product]+= required_quantity*self.subproduct_stock[subproduct]['price']
                         self.subproduct_stock[subproduct]["stock"] -= required_quantity
 
                     # Update product stock and product prices
@@ -160,6 +165,8 @@ class CompanyAgent(BDI_Agent):
                     product_prices[product]['stock'] += 1
                     # Track production
                     products_created += 1
+
+                    self.total_inversion[product]
                 else:
                     # If can't produce more, break the loop for this product
                     break
@@ -187,7 +194,7 @@ class CompanyAgent(BDI_Agent):
 
 
     def plan_investment(self, market_env, show_logs):
-        self.total_inversion=deepcopy(self.product_budget)
+        self.total_inversion={}
         for product in self.product_stock:
             if show_logs:
                 print("stock "+str(self.product_stock[product]))
@@ -199,6 +206,7 @@ class CompanyAgent(BDI_Agent):
             self.popularity[product]=popularity
             investment = self.knowledge.plan_investment(sales, popularity)
             marketing_money = self.product_budget[product] * (100 - investment) / 100
+            self.total_inversion[product]=0
             if show_logs: logging.info(f"{self.name} decided to invest {self.product_budget[product] * investment / 100} dollars in production and {marketing_money} in marketing of {product}")
             #self.marketing(product, marketing_money, market_env.public_variables['marketing_config']['marketing_cost'], show_logs)
             #self.product_budget[product] -= marketing_money
