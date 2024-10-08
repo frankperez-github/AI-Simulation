@@ -84,6 +84,7 @@ class CompanyAgent(BDI_Agent):
                 new_price_percent=self.max_revenue_percent[product]*price_percent/100
                 competitive_factor=0
                 competitive_count=0
+                if show_logs: print(self.beliefs['product_prices'])
                 for company in self.beliefs['product_prices']:
                     if company != self.name:
                         if product in self.beliefs['product_prices'][company]:
@@ -95,12 +96,11 @@ class CompanyAgent(BDI_Agent):
                 new_balance=percent_diference/(-10)
                 new_price= int(new_price * (1+ new_balance/100))
                 
-                if new_price < int(self.total_inversion[product]/self.product_stock[product]):
-                    
+                if new_price < int(self.total_inversion[product]/self.product_stock[product]):                    
                     new_price= int(self.total_inversion[product]/self.product_stock[product] * (1.05))
 
-
                 market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
+                if show_logs: print(self.beliefs['product_prices'])
                 if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
     def designate_budget(self, show_logs,market_env):
@@ -193,15 +193,6 @@ class CompanyAgent(BDI_Agent):
             self.revenue[p]=0
         if show_logs: logging.info(f"Production complete. Total products created by company: {products_created}")
 
-
-    
-    def marketing(self, product, money, unit_price, show_logs):
-        if self.beliefs['company_popularity'][self.name][product] + money/unit_price <= 100: 
-            self.beliefs['company_popularity'][self.name][product] += money/unit_price  
-        else: 
-            self.beliefs['company_popularity'][self.name][product] = 100
-        if show_logs: logging.info(f"{self.name}'s {product} now has {self.beliefs['company_popularity'][self.name][product]} popularity ")
-        
     def adjust_popularity(self, product, quantity, show_logs):
         if self.beliefs['company_popularity'][self.name][product] - quantity >= 0 : 
             self.beliefs['company_popularity'][self.name][product] -= quantity  
@@ -223,8 +214,8 @@ class CompanyAgent(BDI_Agent):
             marketing_money = self.product_budget[product] * (100 - investment) / 100
             self.total_inversion[product]=0
             if show_logs: logging.info(f"{self.name} decided to invest {self.product_budget[product] * investment / 100} dollars in production and {marketing_money} in marketing of {product}")
-            #self.marketing(product, marketing_money, market_env.public_variables['marketing_config']['marketing_cost'], show_logs)
-            #self.product_budget[product] -= marketing_money
+            market_env.hidden_variables['marketing_stonks'].append((self.name, product, marketing_money, show_logs))
+            self.product_budget[product] -= marketing_money
             
 
     def initial_proposals(self):

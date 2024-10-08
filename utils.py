@@ -244,3 +244,12 @@ def popularity_percent(company, product):
     else:
         popularity_ = ((((popularity[company.name] -mini)/(maxi-mini))*100) + popularity[company.name])/2
         return popularity_
+
+def marketing(comp, product, money, show_logs, market_env):
+    unit_price = market_env.public_variables['marketing_config']['marketing_cost']
+    if market_env.public_variables['company_popularity'][comp][product] + money/unit_price <= 100: 
+        market_env.public_variables['company_popularity'][comp][product] += int(money/unit_price) 
+    else: 
+       market_env.public_variables['company_popularity'][comp][product] = 100
+    if show_logs: logging.info(f"{comp}'s {product} now has {market_env.public_variables['company_popularity'][comp][product]} popularity ")
+        

@@ -60,6 +60,11 @@ class CustomerAgent(BDI_Agent):
                 quantity = quantities[i]
                 available_stock = market_env.public_variables['product_prices'][cheapest_company][selected_product]['stock'] 
                 if quantity>0:
+                    #market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] += market_env.public_variables['marketing_config']['popularity_by_sales']
+                    #act_popularity = market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product]
+                    #if act_popularity > 100: market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] = 100
+                    #if act_popularity < 0: market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] = 0
+
                     if available_stock >= quantity:
                         # Reducir stock
                         market_env.public_variables['product_prices'][cheapest_company][selected_product]['stock'] -= quantity
@@ -72,10 +77,6 @@ class CustomerAgent(BDI_Agent):
                         # Registrar la compra en el log
                         if show_logs: logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
 
-                        #market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] += market_env.public_variables['marketing_config']['popularity_by_sales']
-                        #act_popularity = market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product]
-                        #if act_popularity > 100: market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] = 100
-                        #if act_popularity < 0: market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] = 0
                     else:
                         # No hay suficiente stock
                         if show_logs: logging.warning(f"{self.name} attempted to buy {quantity} units of {selected_product}, but only {available_stock} units were available. So the customer decides to buy {quantity} units of {selected_product} ")

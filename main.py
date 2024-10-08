@@ -70,7 +70,7 @@ if __name__ == '__main__':
     suppleirs_knowledge = Suppliers_Knowledge(suppliers_rules,suppliers_functions, suppliers_vars)
 
     product_stock={
-        'product_1':30,'product_2':30,'product_3':30
+        'product_1':60,'product_2':60,'product_3':60
     }
     revenue={
         'product_1':1800,'product_2':1800,'product_3':1800
@@ -107,19 +107,19 @@ if __name__ == '__main__':
 
     product_prices={
         "A":{
-                "product_1":{"stock":0,"price":60},
-                "product_2":{"stock":0,"price":60},
-                "product_3":{"stock":0,"price":60}
+                "product_1":{"stock":30,"price":60},
+                "product_2":{"stock":30,"price":60},
+                "product_3":{"stock":30,"price":60}
             },
         "B":{
-                "product_1":{"stock":0,"price":60},
-                "product_2":{"stock":0,"price":60},
-                "product_3":{"stock":0,"price":60}
+                "product_1":{"stock":30,"price":60},
+                "product_2":{"stock":30,"price":60},
+                "product_3":{"stock":30,"price":60}
             },
         "C":{
-                "product_1":{"stock":0,"price":60},
-                "product_2":{"stock":0,"price":60},
-                "product_3":{"stock":0,"price":60}
+                "product_1":{"stock":30,"price":60},
+                "product_2":{"stock":30,"price":60},
+                "product_3":{"stock":30,"price":60}
             }
     }
 
