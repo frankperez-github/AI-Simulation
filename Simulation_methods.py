@@ -1,9 +1,9 @@
 import copy
 import math
 import logging
-
 import pandas as pd
 from Environment import MarketEnvironment
+
 
 def run_simulation(market_env:MarketEnvironment, steps=3):
     for step in range(steps):
@@ -62,7 +62,6 @@ def run_short_simulation(current_env, company_name, company_product_budget, step
             agent.act(market_copy, show_logs=False)
             
     return market_copy.public_variables["companies"][company_name].revenue
-
 
 def log_environment_data(market_env):
     #available_products_df = pd.DataFrame(list(market_env.public_variables['available_products'].items()), columns=['Product', 'Available Stock'])

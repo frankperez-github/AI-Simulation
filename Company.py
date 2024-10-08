@@ -93,7 +93,7 @@ class CompanyAgent(BDI_Agent):
             budget_distribuitor=Genetic_algorith(fitness_function=partial(self.calcular_fitness,market_env=market_env),
                                                  individual_function=partial(self.crear_individuo),
                                                  mut_function=partial(self.mut_rebalance, market_env=market_env), cx_function=partial(self.cx_rebalance))
-            product_budget_percent=budget_distribuitor.optimize(50,100,0.7,0)
+            product_budget_percent=budget_distribuitor.optimize(20,30,0.7,0)
             budget_distribuitor.close_pool()
             if 'info' in product_budget_percent:
                 self.predicted_revenue = deepcopy(product_budget_percent['info'])
@@ -189,9 +189,6 @@ class CompanyAgent(BDI_Agent):
     def plan_investment(self, market_env, show_logs):
         self.total_inversion=deepcopy(self.product_budget)
         for product in self.product_stock:
-            if show_logs:
-                print("stock "+str(self.product_stock[product]))
-                print("now "+str(self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock']))
             sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock'])
             #self.adjust_popularity(product, market_env.public_variables['marketing_config']['lose_popularity'], show_logs)
             popularity = popularity_percent(self,product)
