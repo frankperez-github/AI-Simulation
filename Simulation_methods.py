@@ -1,11 +1,11 @@
 import copy
 import math
 import logging
-
+from copy import deepcopy
 import pandas as pd
 from Environment import MarketEnvironment
 
-def run_simulation(market_env:MarketEnvironment, steps=3):
+def run_simulation(market_env:MarketEnvironment, steps=12):
     for step in range(steps):
         logging.info(f"\n========== Day {step + 1} ==========")
         for agent in list(market_env.public_variables['companies'].values()):
@@ -14,13 +14,15 @@ def run_simulation(market_env:MarketEnvironment, steps=3):
             agent.plan_intentions(show_logs=True)
             agent.act(market_env, show_logs=True)
 
+
         for agent in list(market_env.public_variables['clients'].values()):
             agent.perceive_environment(market_env, show_logs=True)
             agent.form_desires(show_logs=True)
             agent.plan_intentions(show_logs=True)
             agent.act(market_env, show_logs=True)
             
-
+        
+        market_env.public_variables['product_prices_old']=deepcopy(market_env.public_variables['product_prices'])
         log_environment_data(market_env)
 
 def run_short_simulation(current_env, company_name, company_product_budget, steps=1):

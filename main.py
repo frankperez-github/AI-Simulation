@@ -37,8 +37,8 @@ if __name__ == '__main__':
     n_households = 50
 
     # Parámetros del modelo
-    initial_min_budget = 200
-    initial_mean_budget = 600
+    initial_min_budget = 600
+    initial_mean_budget = 1200
     count_products = 3
     #base_price = {}
     #change_in_price_pct = {}
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     suppleirs_knowledge = Suppliers_Knowledge(suppliers_rules,suppliers_functions, suppliers_vars)
 
     product_stock={
-        'product_1':100,'product_2':100,'product_3':100
+        'product_1':30,'product_2':30,'product_3':30
     }
     revenue={
         'product_1':1800,'product_2':1800,'product_3':1800
@@ -107,19 +107,19 @@ if __name__ == '__main__':
 
     product_prices={
         "A":{
-                "product_1":{"stock":70,"price":60},
-                "product_2":{"stock":70,"price":60},
-                "product_3":{"stock":70,"price":60}
+                "product_1":{"stock":0,"price":60},
+                "product_2":{"stock":0,"price":60},
+                "product_3":{"stock":0,"price":60}
             },
         "B":{
-                "product_1":{"stock":70,"price":60},
-                "product_2":{"stock":70,"price":60},
-                "product_3":{"stock":70,"price":60}
+                "product_1":{"stock":0,"price":60},
+                "product_2":{"stock":0,"price":60},
+                "product_3":{"stock":0,"price":60}
             },
         "C":{
-                "product_1":{"stock":70,"price":60},
-                "product_2":{"stock":70,"price":60},
-                "product_3":{"stock":70,"price":60}
+                "product_1":{"stock":0,"price":60},
+                "product_2":{"stock":0,"price":60},
+                "product_3":{"stock":0,"price":60}
             }
     }
 

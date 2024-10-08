@@ -40,7 +40,7 @@ class CompanyAgent(BDI_Agent):
 
 
     def perceive_environment(self,market_env, show_logs):
-        self.beliefs['product_prices'] = market_env.public_variables['product_prices']
+        self.beliefs['product_prices'] = deepcopy(market_env.public_variables['product_prices_old'])
 
         #for prod in self.beliefs['product_prices'][self.name].keys():
             #self.product_stock[prod] = self.beliefs['product_prices'][self.name][prod]["stock"]
@@ -82,7 +82,24 @@ class CompanyAgent(BDI_Agent):
                 popularity = self.popularity[product]
                 price_percent = self.knowledge.adjust_prices(sales, popularity)
                 new_price_percent=self.max_revenue_percent[product]*price_percent/100
+                competitive_factor=0
+                competitive_count=0
+                for company in self.beliefs['product_prices']:
+                    if company != self.name:
+                        if product in self.beliefs['product_prices'][company]:
+                            competitive_factor+=self.beliefs['product_prices'][company][product]['price']
+                            competitive_count+=1
+                mean_competitive_factor=competitive_factor/competitive_count if competitive_count!=0 else self.beliefs['product_prices'][product]
                 new_price = int(self.total_inversion[product]/self.product_stock[product] * (1+new_price_percent/100))
+                percent_diference=((new_price-mean_competitive_factor)/mean_competitive_factor)*100
+                new_balance=percent_diference/(-10)
+                new_price= int(new_price * (1+ new_balance/100))
+                
+                if new_price < int(self.total_inversion[product]/self.product_stock[product]):
+                    
+                    new_price= int(self.total_inversion[product]/self.product_stock[product] * (1.05))
+
+
                 market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
                 if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
@@ -196,9 +213,7 @@ class CompanyAgent(BDI_Agent):
     def plan_investment(self, market_env, show_logs):
         self.total_inversion={}
         for product in self.product_stock:
-            if show_logs:
-                print("stock "+str(self.product_stock[product]))
-                print("now "+str(self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock']))
+          
             sales = calculate_percent(self.product_stock[product], self.product_stock[product] - self.beliefs['product_prices'][self.name][product]['stock'])
             #self.adjust_popularity(product, market_env.public_variables['marketing_config']['lose_popularity'], show_logs)
             popularity = popularity_percent(self,product)
