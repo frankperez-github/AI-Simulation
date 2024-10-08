@@ -26,6 +26,8 @@ def run_simulation(market_env:MarketEnvironment, steps=3):
             agent.form_desires(show_logs=True)
             agent.plan_intentions(show_logs=True)
             agent.act(market_env, show_logs=True)
+
+        update_companies_revenue(market_env.public_variables["companies"])
         
         for company in market_env.public_variables['company_popularity']:
             for product in market_env.public_variables['company_popularity'][company]:
@@ -39,6 +41,7 @@ def run_simulation(market_env:MarketEnvironment, steps=3):
         
         market_env.public_variables['product_prices_old']=deepcopy(market_env.public_variables['product_prices'])
         log_environment_data(market_env)
+
 
 def run_short_simulation(current_env, company_name, company_product_budget, steps=1):
     # Create a deep copy of current_env and update the product_budget for selected company
@@ -84,16 +87,25 @@ def log_environment_data(market_env):
     #available_products_df = pd.DataFrame(list(market_env.public_variables['available_products'].items()), columns=['Product', 'Available Stock'])
     product_prices_df = pd.DataFrame([(company, product, price) for company, products in market_env.public_variables['product_prices'].items() for product, price in products.items()], columns=['Company', 'Product', 'Price'])
     revenue=[]
+    total_revenue = []
     for company in list(market_env.public_variables['companies'].values()):
+        total_revenue.append((company.name, company.total_revenue))
         for item in company.revenue.items():
             revenue.append(tuple([company.name])+item)
     revenue_df = pd.DataFrame(revenue, columns=['Company','Product', 'Revenue'])
     logging.info("\n----- Market Environment Data -----")
-    #logging.info("\nAvailable Products (Stock):")
-    #logging.info(available_products_df.to_string(index=False))
     logging.info("\nProduct Prices:")
     logging.info(product_prices_df.to_string(index=False))
     logging.info("\nCompany Revenue:")
     logging.info(revenue_df.to_string(index=False))
+    total_revenue_df = pd.DataFrame(total_revenue, columns=['Company', 'Total revenue'])
+    logging.info("\nCompanies total revenue:")
+    logging.info(total_revenue_df.to_string(index=False))
     logging.info("-----------------------------------\n")
 
+def update_companies_revenue(companies):
+    for company_name in companies.keys():
+        company = companies[company_name]
+        for product_name in company.revenue.keys():
+            product_revenue = company.revenue[product_name]
+            company.total_revenue += product_revenue

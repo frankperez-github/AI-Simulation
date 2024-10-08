@@ -24,6 +24,7 @@ class CompanyAgent(BDI_Agent):
     def __init__(self, name, knowledge, revenue, subproduct_stock, product_stock,max_revenue_percent,total_inversion):
         super().__init__(name)
         self.revenue = revenue
+        self.total_revenue = 0
         self.subproduct_stock = subproduct_stock
         self.product_stock = product_stock
         self.product_budget = {}
