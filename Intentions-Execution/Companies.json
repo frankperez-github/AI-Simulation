@@ -18,7 +18,7 @@
     },
     "adjust_prices":{
         "actions": "self.adjust_price(market_env, show_logs)",
-        "log": "f'{self.name} executed intention lower prices.'"
+        "log": "f'{self.name} executed intention adjust prices.'"
     },
 
     "produce":{

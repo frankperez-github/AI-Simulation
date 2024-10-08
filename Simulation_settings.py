@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 from copy import deepcopy
 from Environment import MarketEnvironment
 from Company import CompanyAgent
@@ -17,6 +18,7 @@ def set_and_run_simulation(
     mean_alpha_quintiles,
     sd_alpha,
     customer_attitudes,
+    n_clients,
 
     products,
     subproducts,
@@ -28,6 +30,7 @@ def set_and_run_simulation(
     subproduct_stock,
     products_prices,
     max_revenue_percent,
+    total_inversion,
 
     suppliers_products,
     supplied_subproducts_by_supplier,
@@ -58,7 +61,11 @@ def set_and_run_simulation(
         format='%(message)s',
     )
     
-    customers = [CustomerAgent(f"Cliente{i}", attitude) for i, attitude in enumerate(customer_attitudes)]
+    customers=[]
+    for i in range(n_clients):
+        attitude=random.choices([at for at in customer_attitudes],[customer_attitudes[at] for at in customer_attitudes])[0]
+        customer = CustomerAgent(f"Cliente{i}", attitude)
+        customers.append(customer)
     customers = distribute_budgets(customers, min_salary, mean_salary)
     customers = classify_quintiles(customers)
     customers = assign_alpha(customers, products, mean_alpha_quintiles, sd_alpha)
@@ -70,7 +77,8 @@ def set_and_run_simulation(
             initial_product_revenue[i],
             subproduct_stock[i],
             initial_products_stock[i],
-            max_revenue_percent[i]
+            max_revenue_percent[i],
+            total_inversion[i]
         )
         for i in range(len(companies_names))
     }
@@ -81,10 +89,7 @@ def set_and_run_simulation(
 
     company_products_prices = {
         companies_names[i]: {
-            product: {
-                "stock": initial_products_stock[i][product],
-                "price": products_prices[i][product]["price"]
-            }
+            product:products_prices[i][product]
             for product in initial_products_stock[i]
         }
         for i in range(len(companies_names))

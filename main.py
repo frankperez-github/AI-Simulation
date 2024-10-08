@@ -23,13 +23,13 @@ if __name__ == '__main__':
     }]
 
     initial_product_revenue=[{
-        'product_1':6000,'product_2':6000,'product_3':6000
+        'product_1':3600,'product_2':3600,'product_3':3600
     },
     {
-        'product_1':6000,'product_2':6000,'product_3':6000
+        'product_1':3600,'product_2':3600,'product_3':3600
     },
     {
-        'product_1':6000,'product_2':6000,'product_3':6000
+        'product_1':3600,'product_2':3600,'product_3':3600
     }]
     subproduct_stock=[{
         "product_1":{"stock":0,"price":60},
@@ -48,19 +48,19 @@ if __name__ == '__main__':
     }]
     products_prices = [
         {
-            "product_1":{"price":120},
-            "product_2":{"price":120},
-            "product_3":{"price":120}
+            "product_1":{"stock":20,"price":120},
+            "product_2":{"stock":20,"price":120},
+            "product_3":{"stock":20,"price":120}
         },
         {
-            "product_1":{"price":120},
-            "product_2":{"price":120},
-            "product_3":{"price":120}
+            "product_1":{"stock":20,"price":120},
+            "product_2":{"stock":20,"price":120},
+            "product_3":{"stock":20,"price":120}
         },
         {
-            "product_1":{"price":120},
-            "product_2":{"price":120},
-            "product_3":{"price":120}
+            "product_1":{"stock":20,"price":120},
+            "product_2":{"stock":20,"price":120},
+            "product_3":{"stock":20,"price":120}
         }
     ]
     max_revenue_percent=[{
@@ -77,6 +77,22 @@ if __name__ == '__main__':
         "product_1":100,
         "product_2":100,
         "product_3":100
+    }]
+
+    total_inversion=[{
+        "product_1":3000,
+        "product_2":3000,
+        "product_3":3000
+    },
+    {
+        "product_1":3000,
+        "product_2":3000,
+        "product_3":3000
+    },
+    {
+        "product_1":3000,
+        "product_2":3000,
+        "product_3":3000
     }]
     suppliers_products = [
         {
@@ -114,9 +130,11 @@ set_and_run_simulation(
     subproduct_stock=subproduct_stock,
     products_prices=products_prices,
     max_revenue_percent=max_revenue_percent,
+    total_inversion=total_inversion,
     suppliers_products=suppliers_products,
     subproducts=subproducts,
     supplied_subproducts_by_supplier=supplied_subproducts_by_supplier,
     marketing_config=marketing_config,
-    company_products_popularity=company_products_popularity
+    company_products_popularity=company_products_popularity,
+    n_clients= n_households
 )
