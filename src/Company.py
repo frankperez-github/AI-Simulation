@@ -97,6 +97,8 @@ class CompanyAgent(BDI_Agent):
                             competitive_count+=1
                 mean_competitive_factor=competitive_factor/competitive_count if competitive_count!=0 else self.beliefs['product_prices'][product]
                 new_price = int(self.total_inversion[product]/self.product_stock[product] * (1+new_price_percent/100))
+                if new_price==0:
+                    new_price = self.beliefs['product_prices'][self.name][product]['price']/2
                 percent_diference=((new_price-mean_competitive_factor)/mean_competitive_factor)*100
                 new_balance=percent_diference/(-10)
                 new_price= int(new_price * (1+ new_balance/100))
@@ -184,7 +186,7 @@ class CompanyAgent(BDI_Agent):
             for p in self.revenue
         }
 
-        if show_logs: logging.info(f"Production complete. Total products created by company: {products_created}")
+        if show_logs: logging.info(f"Production complete. Total products created by company {self.name}: {products_created}")
 
     def adjust_popularity(self, product, quantity, show_logs):
         if self.beliefs['company_popularity'][self.name][product] - quantity >= 0 : 

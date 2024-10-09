@@ -1,8 +1,16 @@
+import json
+import os
 import random
 import csv
 from src.Simulation_settings import set_and_run_simulation
+import warnings
+
+from src.pln.pln_model import PLN_Model
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+
 
 def generate_statistics(selected_company_name, filename="simulation_results.csv"):
+
     base_header = [
         "simulacion_id",
         "ganancia_empresa",
@@ -20,7 +28,7 @@ def generate_statistics(selected_company_name, filename="simulation_results.csv"
         writer = csv.writer(file)
         header_written = False
 
-        for i in range(10):
+        for i in range(1):
             min_salary = random.randint(500, 2000)
             mean_salary = random.randint(min_salary + 100, min_salary + 1000) 
 
@@ -45,6 +53,8 @@ def generate_statistics(selected_company_name, filename="simulation_results.csv"
                 customer_attitudes=customer_attitudes,
                 marketing_config=marketing_config,
             )
+            
+
 
             selected_company = market.get_company_data(selected_company_name)
 
@@ -90,5 +100,35 @@ def generate_statistics(selected_company_name, filename="simulation_results.csv"
 
             writer.writerow(row)
 
+
+        #####################################  LLM  ####################################################
+        os.environ["GOOGLE_API_KEY"] = "AIzaSyDSEBiDs3Ih3LgKJVfCAfTCDWrGyLe0kdw"
+        pln_model = PLN_Model("gemini-1.5-flash")
+        with open('./src/pln/context.json') as pln_context_json_file:
+            pln_context_and_log = json.load(pln_context_json_file)["context"] + read_log_file("./src/simulation_logs.log")
+
+        print(f"Requesting summary for month {i+1}...")
+        response = pln_model.get_response(pln_context_and_log)
+
+        if not os.path.exists("./summaries"):
+            os.makedirs("./summaries")
+        with open(f"./summaries/summary_simulation_{i+1}.md", "w") as md_file:
+            md_file.write(response)
+        print("Summary is ready!")
+        #################################################################################################
+
+
+def read_log_file(file_path):
+    try:
+        with open(file_path, "r") as file:
+            content = file.read()
+        return content
+    except Exception as e:
+        return f"Error: {str(e)}"
+    
+
+
+
 if __name__ == '__main__':
     generate_statistics("A")
+
