@@ -143,11 +143,6 @@ class CompanyAgent(BDI_Agent):
             for p in product_budget_percent:
                 product_budget[p]=total*product_budget_percent[p]/100
             self.product_budget=product_budget
-            
-        #else:
-        #    for p in self.revenue:
-        #        self.product_budget[p]=self.revenue[p]*4/5
-
 
 
     def produce(self, market_env, show_logs):
@@ -160,21 +155,14 @@ class CompanyAgent(BDI_Agent):
         # Step 1: Reset product stock to 0 for all products
         self.product_stock = {product: self.beliefs['product_prices'][self.name][product]['stock'] for product in self.beliefs['product_prices'][self.name]}
 
-        # Step 2: Reset the product quantities in market_env.public_variables['product_prices'] while keeping prices
+        # Reset the product quantities in market_env.public_variables['product_prices'] while keeping prices
         product_prices = market_env.public_variables['product_prices'].get(self.name, {})
-        #for product, details in product_prices.items():
-        #    details['stock'] = 0  # Reset quantity but keep the price
-
-        # Step 3: Save the maximum budget for each product
-        #product_max_budget = {
-        #    product: self.product_budget[product] for product in self.product_budget
-        #}
 
         products_created = 0
         
-        # Step 4: Sort products by revenue (highest to lowest)
+        # Sort products by revenue (highest to lowest)
         sorted_products = sorted(self.predicted_revenue, key=lambda x: self.predicted_revenue[x], reverse=True) if show_logs else sorted(self.revenue, key=lambda x: self.revenue[x], reverse=True)
-        # Step 5: Produce products based on revenue priority and budgeself.predictself.predicted_revenue.items()ed_revenue.items()t limit
+        # Produce products based on revenue priority and budgeself.predictself.predicted_revenue.items()ed_revenue.items()t limit
         for product in sorted_products:
             if product not in self.product_budget:
                 continue  # Skip if product does not have an allocated budget
@@ -202,14 +190,15 @@ class CompanyAgent(BDI_Agent):
                     self.products[product]["produced_quantity"] += 1
                     # Track production
                     products_created += 1
-
-                    
                 else:
                     break
 
         
-        for p in self.revenue:
-            self.revenue[p]=0
+        self.revenue={
+            p: 0 
+            for p in self.revenue
+        }
+        
         if show_logs: logging.info(f"Production complete. Total products created by company: {products_created}")
 
     def adjust_popularity(self, product, quantity, show_logs):

@@ -1,3 +1,4 @@
+import math
 import random
 import logging
 from src.BaseAgent import BDI_Agent
@@ -104,6 +105,8 @@ class CustomerAgent(BDI_Agent):
             else:
                 cheapest_company=random.choice(cheapest_company)
 
+            if cheapest_price == float('inf'):
+                cheapest_price = 1
             quantity = int(self.alpha[selected_product] * self.budget / cheapest_price)
             cheapest_companies.append(cheapest_company)
             quantities.append(quantity)
@@ -187,6 +190,9 @@ class CustomerAgent(BDI_Agent):
                     cheapest_comp=None
                 else:
                     cheapest_comp=random.choice(cheapest_comp)
+                
+                if cheapest_price == float('inf'):
+                    cheapest_price = 1
                 quantity = int(self.alpha[selected_product] * self.budget / cheapest_price)
                 companies.append(cheapest_comp)
                 quantities.append(quantity)

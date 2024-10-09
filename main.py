@@ -5,7 +5,15 @@ from src.Simulation_settings import set_and_run_simulation
 def generate_statistics(selected_company_name, filename="simulation_results.csv"):
     base_header = [
         "simulacion_id",
-        "ganancia_empresa"
+        "ganancia_empresa",
+        "min_salary",
+        "mean_salary",
+        "customer_attitude_stingy",
+        "customer_attitude_populist",
+        "customer_attitude_cautious",
+        "customer_attitude_random",
+        "lose_popularity",
+        "marketing_cost"
     ]
     
     with open(filename, mode="w", newline="") as file:
@@ -19,10 +27,10 @@ def generate_statistics(selected_company_name, filename="simulation_results.csv"
             attitudes = [random.random() for _ in range(4)]
             total = sum(attitudes)
             customer_attitudes = {
-                'stingy': attitudes[0] / total,
-                'populist': attitudes[1] / total,
-                'cautious': attitudes[2] / total,
-                'random': attitudes[3] / total
+                'stingy': 0,
+                'populist': 0,
+                'cautious':0,
+                'random': 1
             }
 
             marketing_config = {
@@ -42,7 +50,15 @@ def generate_statistics(selected_company_name, filename="simulation_results.csv"
 
             row = [
                 i + 1,
-                selected_company.total_revenue
+                selected_company.total_revenue,
+                min_salary,
+                mean_salary,
+                customer_attitudes['stingy'],
+                customer_attitudes['populist'],
+                customer_attitudes['cautious'],
+                customer_attitudes['random'],
+                marketing_config['lose_popularity'],
+                marketing_config['marketing_cost']
             ]
 
             if not header_written:

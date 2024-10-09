@@ -87,7 +87,6 @@ def run_short_simulation(current_env, company_name, company_product_budget, step
     return market_copy.public_variables["companies"][company_name].revenue
 
 def log_environment_data(market_env):
-    #available_products_df = pd.DataFrame(list(market_env.public_variables['available_products'].items()), columns=['Product', 'Available Stock'])
     product_prices_df = pd.DataFrame([(company, product, price) for company, products in market_env.public_variables['product_prices'].items() for product, price in products.items()], columns=['Company', 'Product', 'Price'])
     revenue=[]
     total_revenue = []
@@ -102,7 +101,7 @@ def log_environment_data(market_env):
     logging.info("\nCompany Revenue:")
     logging.info(revenue_df.to_string(index=False))
     total_revenue_df = pd.DataFrame(total_revenue, columns=['Company', 'Total revenue'])
-    logging.info("\nCompanies total revenue:")
+    logging.info("\nCompanies total revenue:") 
     logging.info(total_revenue_df.to_string(index=False))
     logging.info("-----------------------------------\n")
 
