@@ -5,5 +5,6 @@
 
     "price" : "ctrl.Antecedent(np.arange(0, 101, 1), 'price')",
     "quantity" : "ctrl.Antecedent(np.arange(0, 101, 1), 'quantity')",
-    "acceptability" : "ctrl.Consequent(np.arange(0, 101, 1), 'acceptability')"
+    "acceptability" : "ctrl.Consequent(np.arange(0, 101, 1), 'acceptability')",
+    "adj_price" : "ctrl.Consequent(np.arange(5, 101, 1), 'adj_price')"
 }

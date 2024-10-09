@@ -1,4 +1,4 @@
-from Knowledge import Knowledge
+from src.Knowledge import Knowledge
 
 class Suppliers_Knowledge(Knowledge):
     def __init__(self, suppliers_rules, suppliers_functions, suppliers_vars):

@@ -35,5 +35,13 @@
         "unacceptable" : "fuzz.trimf(self.vars['acceptability'].universe, [0, 0, 50])",
         "acceptable" : "fuzz.trimf(self.vars['acceptability'].universe, [25, 50, 75])",
         "very_acceptable" : "fuzz.trimf(self.vars['acceptability'].universe, [50, 100, 100])"
+    },
+
+    "adj_price" : {
+        "very_low" : "fuzz.trimf(self.vars['adj_price'].universe, [5, 5, 20])", 
+        "low" : "fuzz.trimf(self.vars['adj_price'].universe,[10, 25, 40])",
+        "medium" : "fuzz.trimf(self.vars['adj_price'].universe,  [30, 50, 70])",
+        "high" : "fuzz.trimf(self.vars['adj_price'].universe, [60, 75, 90])",
+        "very_high" : "fuzz.trimf(self.vars['adj_price'].universe, [80, 100, 100])"
     }
 }
