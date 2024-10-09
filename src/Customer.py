@@ -66,6 +66,8 @@ class CustomerAgent(BDI_Agent):
                             market_env.public_variables['companies'][cheapest_company].revenue[selected_product]= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
                         
                         market_env.public_variables["companies"][cheapest_company].products[selected_product]["sold_quantity"] += quantity
+                        # Add earned money to revenue
+                        market_env.public_variables["companies"][cheapest_company].total_revenue += market_env.public_variables['product_prices'][cheapest_company][selected_product]['price'] * quantity
 
                         if show_logs: logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
 
@@ -79,6 +81,8 @@ class CustomerAgent(BDI_Agent):
 
                         
                         market_env.public_variables["companies"][cheapest_company].products[selected_product]["sold_quantity"] += quantity
+                        # Add earned money to revenue
+                        market_env.public_variables["companies"][cheapest_company].total_revenue += market_env.public_variables['product_prices'][cheapest_company][selected_product]['price'] * quantity
 
                         if show_logs: logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
                        

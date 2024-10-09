@@ -194,6 +194,6 @@ def set_and_run_simulation(
         marketing_config=marketing_config
     )
 
-    run_simulation(market_env, 2)
+    run_simulation(market_env, 12)
 
     return market_env

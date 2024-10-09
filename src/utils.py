@@ -210,9 +210,8 @@ def make_transaction(company, supplier, offer, show_logs):
     supplier.beliefs['supplier_conditions'][product]['quantity'] -= quantity
     if show_logs: logging.info(f"{supplier.name} sold {quantity} units of {product} to {company.name}.")
 
-    # Deduct the money from the company's product budget
-    allocated_budget = company.s_offers[product]['units'] * company.s_offers[product]['price']
-    total_cost = quantity * price
+    # Deduct the money from the company's revenue
+    company.total_revenue -= offer["quantity"]*offer["price"]
     
     # Update the product-specific budget in company's s_offers
     company.s_offers[product]['units'] -= quantity  # Reduce the quantity in the product budget
@@ -221,14 +220,10 @@ def make_transaction(company, supplier, offer, show_logs):
     if product not in company.subproduct_stock:
         company.subproduct_stock[product] = {"stock": 0, "price": price}
     company.subproduct_stock[product]['stock'] += quantity 
-    company.subproduct_stock[product]['price'] = price 
+    company.subproduct_stock[product]['price'] = max(company.subproduct_stock[product]['price'], price) 
 
     if show_logs: logging.info(f"{company.name} added {quantity} units of {product} to stock at {price} per unit.")
-
-    # Update the company's total budget only for this specific product
-    company.total_budget += allocated_budget - total_cost 
-    if show_logs: logging.info(f"{company.name}'s total budget updated to {company.total_budget}.")
-
+    
     return True
 
 
