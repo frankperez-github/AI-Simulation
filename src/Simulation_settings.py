@@ -19,7 +19,7 @@ def set_and_run_simulation(
     marketing_config
 ):
     
-    n_clients = 2
+    n_clients = 20
     products=["product_1","product_2","product_3"]
     mean_alpha_quintiles = { i: [0.15, 0.13, 0.12, 0.1, 0.08] for i in range(len(products)) }
     sd_alpha = { i: 0.02 for i in range(len(products)) }
@@ -106,9 +106,9 @@ def set_and_run_simulation(
     }]
     suppliers_products = [
         {
-            'product_1': {'quantity': 5000, 'min_price': 30},
-            'product_2': {'quantity': 5000, 'min_price': 30},
-            'product_3': {'quantity': 5000, 'min_price': 30},
+            'product_1': {'quantity': 500000, 'min_price': 30},
+            'product_2': {'quantity': 500000, 'min_price': 30},
+            'product_3': {'quantity': 500000, 'min_price': 30},
         }
     ]
     subproducts={"product_1":{"product_1":1},"product_2":{"product_2":1},"product_3":{"product_3":1}}

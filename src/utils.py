@@ -199,15 +199,7 @@ def make_transaction(company, supplier, offer, show_logs):
     product = offer['product']
     quantity = offer['quantity']
     price = offer['price']
-    
-    # Update supplier's stock (reduce the quantity of the product in supplier conditions)
-    supplier_conditions = supplier.beliefs['supplier_conditions'].get(product, {})
-    if not supplier_conditions:
-        if show_logs: logging.error(f"Supplier does not provide {product}.")
-        return False  # Transaction fails if the product is not found
-    
-    # Deduct the quantity from the supplier's stock
-    supplier.beliefs['supplier_conditions'][product]['quantity'] -= quantity
+   
     if show_logs: logging.info(f"{supplier.name} sold {quantity} units of {product} to {company.name}.")
 
     # Deduct the money from the company's revenue
