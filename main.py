@@ -53,7 +53,6 @@ def generate_statistics(selected_company_name, filename="simulation_results.csv"
                 customer_attitudes=customer_attitudes,
                 marketing_config=marketing_config,
             )
-            
 
 
             selected_company = market.get_company_data(selected_company_name)

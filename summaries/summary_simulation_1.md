@@ -2,12 +2,9 @@
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en la producción, con una menor proporción destinada al marketing. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos a la producción de producto_3, con una menor proporción destinada al marketing.
+* La empresa A invierte mayoritariamente en la producción de producto_2, con una menor proporción destinada al marketing.
+* La empresa C se centra en la producción de producto_1, con una menor proporción destinada al marketing.
 
 *Patrones de Compra:*
 
@@ -21,266 +18,222 @@
 * La empresa B tiene una pérdida de -3784.70 dólares.
 * La empresa C registra una ganancia de 1023.53 dólares.
 
-
 ### Mes 2
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en la producción, con una menor proporción destinada al marketing. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa A destina la mayor parte de sus fondos a la producción de producto_2, con una menor proporción destinada al marketing.
+* La empresa B no invierte en producción ni marketing.
+* La empresa C se centra en la producción de producto_1, con una menor proporción destinada al marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas A y B, comprando principalmente sus productos 1, 2 y 3.
+* Los clientes muestran una predilección por los productos de las empresas A y C, comprando principalmente sus productos 1 y 2.
 * Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 2 de la empresa C.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 487.53 dólares.
-* La empresa B tiene una ganancia de 9877.53 dólares.
-* La empresa C registra una ganancia de 3265.53 dólares.
-
+* La empresa A registra una ganancia de 7893.76 dólares.
+* La empresa B tiene una ganancia de 7555.53 dólares.
+* La empresa C registra una ganancia de 9580.53 dólares.
 
 ### Mes 3
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en la producción, con una menor proporción destinada al marketing. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_2, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa C se centra en la producción de producto_1, con una menor proporción destinada al marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas B y A, comprando principalmente sus productos 1, 2 y 3.
+* Los clientes muestran una predilección por los productos de las empresas A y C, comprando principalmente sus productos 1, 2 y 3.
 * Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa A.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 11808.98 dólares.
-* La empresa B tiene una ganancia de 13499.79 dólares.
-* La empresa C registra una ganancia de 8501.12 dólares.
-
+* La empresa A registra una ganancia de 18792.11 dólares.
+* La empresa B tiene una ganancia de 17925.53 dólares.
+* La empresa C registra una ganancia de 20114.79 dólares.
 
 ### Mes 4
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en el marketing, con una menor proporción destinada a la producción. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos al marketing, con una cantidad menor destinada a la producción.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_2, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa C se centra en el marketing de producto_3, con una menor proporción destinada a la producción.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas A y B, comprando principalmente sus productos 1, 2 y 3.
+* Los clientes muestran una predilección por los productos de las empresas A y C, comprando principalmente sus productos 1, 2 y 3.
 * Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa A.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 23236.23 dólares.
-* La empresa B tiene una ganancia de 32889.78 dólares.
-* La empresa C registra una ganancia de 17599.40 dólares.
-
+* La empresa A registra una ganancia de 26717.40 dólares.
+* La empresa B tiene una ganancia de 18693.59 dólares.
+* La empresa C registra una ganancia de 29676.27 dólares.
 
 ### Mes 5
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en la producción, con una menor proporción destinada al marketing. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_1, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_1, con una menor proporción destinada a la producción.
+* La empresa C se centra en el marketing de producto_3, con una menor proporción destinada a la producción.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas B y A, comprando principalmente sus productos 1, 2 y 3.
+* Los clientes muestran una predilección por los productos de las empresas A y C, comprando principalmente sus productos 1, 2 y 3.
 * Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa C.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 20861.73 dólares.
-* La empresa B tiene una ganancia de 42887.44 dólares.
-* La empresa C registra una ganancia de 28572.15 dólares.
-
+* La empresa A registra una ganancia de 31878.51 dólares.
+* La empresa B tiene una ganancia de 19339.20 dólares.
+* La empresa C registra una ganancia de 33334.01 dólares.
 
 ### Mes 6
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en el marketing, con una menor proporción destinada a la producción. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa C se centra en el marketing de producto_3, con una menor proporción destinada a la producción.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas A y B, comprando principalmente sus productos 1, 2 y 3.
-* Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes muestran una predilección por los productos de la empresa A, comprando principalmente sus productos 2 y 3.
+* Los clientes que buscan los productos más baratos tienden a comprar el producto 1 de la empresa C y el producto 2 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa A.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 33997.73 dólares.
-* La empresa B tiene una ganancia de 45802.85 dólares.
-* La empresa C registra una ganancia de 30785.95 dólares.
-
+* La empresa A registra una ganancia de 34573.96 dólares.
+* La empresa B tiene una ganancia de 20695.43 dólares.
+* La empresa C registra una ganancia de 32916.77 dólares.
 
 ### Mes 7
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en el marketing, con una menor proporción destinada a la producción. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos al marketing, con una cantidad menor destinada a la producción.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_2, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_1, con una menor proporción destinada a la producción.
+* La empresa C no invierte en producción ni marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas B y A, comprando principalmente sus productos 1, 2 y 3.
-* Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes muestran una predilección por los productos de la empresa C, comprando principalmente sus productos 1 y 3.
+* Los clientes que buscan los productos más baratos tienden a comprar el producto 1 de la empresa C y el producto 2 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa C.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 39695.78 dólares.
-* La empresa B tiene una ganancia de 56131.29 dólares.
-* La empresa C registra una ganancia de 36112.94 dólares.
-
+* La empresa A registra una ganancia de 34792.03 dólares.
+* La empresa B tiene una ganancia de 21991.89 dólares.
+* La empresa C registra una ganancia de 32916.77 dólares.
 
 ### Mes 8
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en el marketing, con una menor proporción destinada a la producción. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos al marketing, con una cantidad menor destinada a la producción.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1 y 2.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_2, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_2, con una menor proporción destinada a la producción.
+* La empresa C no invierte en producción ni marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas A y B, comprando principalmente sus productos 1, 2 y 3.
-* Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes muestran una predilección por los productos de la empresa A, comprando principalmente sus productos 2 y 3.
+* Los clientes que buscan los productos más baratos tienden a comprar el producto 2 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa A.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 46485.76 dólares.
-* La empresa B tiene una ganancia de 55465.78 dólares.
-* La empresa C registra una ganancia de 45919.77 dólares.
-
+* La empresa A registra una ganancia de 36539.18 dólares.
+* La empresa B tiene una ganancia de 24650.81 dólares.
+* La empresa C registra una ganancia de 32916.77 dólares.
 
 ### Mes 9
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en la producción, con una menor proporción destinada al marketing. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa C no invierte en producción ni marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas B y A, comprando principalmente sus productos 1, 2 y 3.
-* Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes muestran una predilección por los productos de la empresa B, comprando principalmente sus productos 2 y 3.
+* Los clientes que buscan los productos más baratos tienden a comprar el producto 2 de la empresa A.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa B.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 48656.50 dólares.
-* La empresa B tiene una ganancia de 64788.31 dólares.
-* La empresa C registra una ganancia de 52812.42 dólares.
-
+* La empresa A registra una ganancia de 37319.87 dólares.
+* La empresa B tiene una ganancia de 26007.27 dólares.
+* La empresa C registra una ganancia de 32916.77 dólares.
 
 ### Mes 10
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en el marketing, con una menor proporción destinada a la producción. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_1, con una menor proporción destinada a la producción.
+* La empresa C no invierte en producción ni marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas C y A, comprando principalmente sus productos 1, 2 y 3.
-* Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes muestran una predilección por los productos de la empresa B, comprando principalmente sus productos 2 y 3.
+* Los clientes que buscan los productos más baratos tienden a comprar el producto 2 de la empresa B.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa B.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 52879.64 dólares.
-* La empresa B tiene una ganancia de 72082.73 dólares.
-* La empresa C registra una ganancia de 60193.46 dólares.
-
+* La empresa A registra una ganancia de 37730.10 dólares.
+* La empresa B tiene una ganancia de 27345.73 dólares.
+* La empresa C registra una ganancia de 32916.77 dólares.
 
 ### Mes 11
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en la producción, con una menor proporción destinada al marketing. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa C no invierte en producción ni marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas C y A, comprando principalmente sus productos 1, 2 y 3.
-* Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes muestran una predilección por los productos de la empresa B, comprando principalmente sus productos 2 y 3.
+* Los clientes que buscan los productos más baratos tienden a comprar el producto 2 de la empresa B.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa B.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 59914.08 dólares.
-* La empresa B tiene una ganancia de 75503.15 dólares.
-* La empresa C registra una ganancia de 67770.50 dólares.
-
+* La empresa A registra una ganancia de 38208.10 dólares.
+* La empresa B tiene una ganancia de 28293.96 dólares.
+* La empresa C registra una ganancia de 32916.77 dólares.
 
 ### Mes 12
 
 *Inversiones:*
 
-* La empresa A invierte la mayor parte de sus fondos en la producción, con una menor proporción destinada al marketing. 
-* La empresa B también invierte principalmente en la producción, con una menor parte dedicada al marketing.
-* La empresa C destina la mayoría de sus fondos a la producción, con una cantidad menor destinada al marketing.
-* La empresa A invierte mayoritariamente en la producción de productos 1, 2 y 3. 
-* La empresa B prioriza la producción de productos 1, 2 y 3.
-* La empresa C se centra en la producción de productos 1, 2 y 3.
+* La empresa B destina la mayor parte de sus fondos al marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa A invierte mayoritariamente en el marketing de producto_3, con una menor proporción destinada a la producción.
+* La empresa C no invierte en producción ni marketing.
 
 *Patrones de Compra:*
 
-* Los clientes muestran una preferencia por los productos de las empresas C y A, comprando principalmente sus productos 1, 2 y 3.
-* Los clientes que buscan los productos más baratos tienden a comprar los productos 1 y 2 de las empresas A y C.
-* Los clientes que compran por popularidad adquieren mayoritariamente los productos 1 y 3 de la empresa A.
+* Los clientes muestran una predilección por los productos de la empresa B, comprando principalmente sus productos 2 y 3.
+* Los clientes que buscan los productos más baratos tienden a comprar el producto 2 de la empresa B.
+* Los clientes que compran por popularidad adquieren mayoritariamente los productos 2 y 3 de la empresa B.
 
 *Ganancias y Deudas:*
 
-* La empresa A registra una ganancia de 64646.66 dólares.
-* La empresa B tiene una ganancia de 79370.37 dólares.
-* La empresa C registra una ganancia de 78482.69 dólares. 
+* La empresa A registra una ganancia de 38696.10 dólares.
+* La empresa B tiene una ganancia de 28793.96 dólares.
+* La empresa C registra una ganancia de 32916.77 dólares. 

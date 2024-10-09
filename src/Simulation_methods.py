@@ -2,6 +2,7 @@ import copy
 import math
 import logging
 from copy import deepcopy
+import random
 import pandas as pd
 from src.Environment import MarketEnvironment
 from src.utils import marketing
@@ -10,7 +11,10 @@ from src.utils import marketing
 def run_simulation(market_env:MarketEnvironment, steps=3):
     for step in range(steps):
         logging.info(f"\n========== Month {step + 1} ==========")
-        for agent in list(market_env.public_variables['companies'].values()):
+        
+        companies_list = list(market_env.public_variables['companies'].values())
+        random.shuffle(companies_list)
+        for agent in companies_list:
             agent.perceive_environment(market_env, show_logs=True)
             agent.form_desires(show_logs=True)
             agent.plan_intentions(show_logs=True)
@@ -21,7 +25,9 @@ def run_simulation(market_env:MarketEnvironment, steps=3):
 
         market_env.hidden_variables['marketing_stonks'] = []
 
-        for agent in list(market_env.public_variables['clients'].values()):
+        clients_list = list(market_env.public_variables['clients'].values())
+        random.shuffle(clients_list)
+        for agent in clients_list:
             agent.perceive_environment(market_env, show_logs=True)
             agent.form_desires(show_logs=True)
             agent.plan_intentions(show_logs=True)

@@ -117,7 +117,7 @@ class CompanyAgent(BDI_Agent):
             budget_distribuitor=Genetic_algorith(fitness_function=partial(self.calcular_fitness,market_env=market_env),
                                                  individual_function=partial(self.crear_individuo),
                                                  mut_function=partial(self.mut_rebalance, market_env=market_env), cx_function=partial(self.cx_rebalance))
-            product_budget_percent=budget_distribuitor.optimize(1,1,0.7,0)
+            product_budget_percent=budget_distribuitor.optimize(30,20,0.7,0.1)
             budget_distribuitor.close_pool()
             if 'info' in product_budget_percent:
                 self.predicted_revenue = deepcopy(product_budget_percent['info'])
