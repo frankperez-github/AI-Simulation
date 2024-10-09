@@ -89,20 +89,14 @@ def run_short_simulation(current_env, company_name, company_product_budget, step
 def log_environment_data(market_env):
     product_prices_df = pd.DataFrame([(company, product, price) for company, products in market_env.public_variables['product_prices'].items() for product, price in products.items()], columns=['Company', 'Product', 'Price'])
     revenue=[]
-    total_revenue = []
-    for company in list(market_env.public_variables['companies'].values()):
-        total_revenue.append((company.name, company.total_revenue))
-        for item in company.revenue.items():
-            revenue.append(tuple([company.name])+item)
-    revenue_df = pd.DataFrame(revenue, columns=['Company','Product', 'Revenue'])
+    for company_name in list(market_env.public_variables['companies'].keys()):
+        revenue.append((company_name, market_env.public_variables['companies'][company_name].total_revenue))
+    revenue_df = pd.DataFrame((revenue), columns=['Company', 'Revenue'])
     logging.info("\n----- Market Environment Data -----")
     logging.info("\nProduct Prices:")
     logging.info(product_prices_df.to_string(index=False))
-    logging.info("\nCompany Revenue:")
+    logging.info("\nCompanies Revenue:")
     logging.info(revenue_df.to_string(index=False))
-    total_revenue_df = pd.DataFrame(total_revenue, columns=['Company', 'Total revenue'])
-    logging.info("\nCompanies total revenue:") 
-    logging.info(total_revenue_df.to_string(index=False))
     logging.info("-----------------------------------\n")
 
 def update_companies_revenue(companies):

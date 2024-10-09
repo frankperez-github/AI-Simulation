@@ -18,7 +18,6 @@ class SupplierAgent(BDI_Agent):
     def __init__(self, name, products, knowledge):
         super().__init__(name)
         self.beliefs['supplier_conditions']=products
-        self.agreements = []
         self.knowledge = knowledge
     
     def perceive_environment(self,market_env, show_logs):

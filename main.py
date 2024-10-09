@@ -20,17 +20,17 @@ def generate_statistics(selected_company_name, filename="simulation_results.csv"
         writer = csv.writer(file)
         header_written = False
 
-        for i in range(30):
+        for i in range(10):
             min_salary = random.randint(500, 2000)
             mean_salary = random.randint(min_salary + 100, min_salary + 1000) 
 
             attitudes = [random.random() for _ in range(4)]
             total = sum(attitudes)
             customer_attitudes = {
-                'stingy': 0,
-                'populist': 0,
-                'cautious':0,
-                'random': 1
+                'stingy': attitudes[0] / total,
+                'populist': attitudes[1] / total,
+                'cautious': attitudes[2] / total,
+                'random': attitudes[3] / total
             }
 
             marketing_config = {
