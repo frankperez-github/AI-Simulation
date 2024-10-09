@@ -14,43 +14,12 @@ intentions_execution = json.load(int_exec_json_file)
 
 logging.basicConfig(filename='src/simulation_logs.log', level=logging.INFO, format='%(message)s')
 
-class SupplierAgent(BDI_Agent):
+class SupplierAgent():
     def __init__(self, name, products, knowledge):
-        super().__init__(name)
-        self.beliefs['supplier_conditions']=products
+        self.supplier_conditions = products
         self.knowledge = knowledge
+        self.name = name
     
-    def perceive_environment(self,market_env, show_logs):
-        self.beliefs['product_prices']=market_env.public_variables['product_prices']
-        self.beliefs['subproducts']=market_env.public_variables['subproducts']
-        if show_logs: logging.info(f"{self.name} has perceived the environment and updated beliefs about market demand and available products.")
-
-    def form_desires(self, show_logs):
-        supply = random.choice([True, False]) 
-        if supply:
-            self.desires.append('supply_products')
-        if show_logs: logging.info(f"{self.name} has formed desires. Supply products: {supply}")
-
-    def plan_intentions(self, show_logs):
-        for desire in self.desires:
-            self.intentions += desires_intentions[desire]
-            if show_logs: logging.info(f"{self.name} has planned to {desires_intentions[desire]}")
-        self.desires=[]
-
-    def execute_intention(self,intention, market_env, show_logs):
-        execution = intentions_execution[intention]
-        for action in execution["actions"]:
-            eval(action)
-        if show_logs: logging.info(eval(execution["log"]))
-
-    def supply_products(self, market_env: MarketEnvironment):
-        for company in self.beliefs['product_prices']:
-            for product in self.beliefs['product_prices'][company]:
-                subproducts=self.beliefs['subproducts'][product]
-                for subproduct in subproducts:
-                    if subproduct in self.beliefs['supplier_conditions']:
-                        market_env.public_variables['companies'][company].subproduct_stock[subproduct]['stock']+=100
-
     def evaluate_offer(self, offer, show_logs):
         """
         The supplier evaluates the offer using fuzzy logic to decide whether to accept, reject, or make a counteroffer.
@@ -61,7 +30,7 @@ class SupplierAgent(BDI_Agent):
         requested_quantity = offer['quantity']
 
         # Retrieve the supplier's conditions for the product
-        supplier_conditions = self.beliefs['supplier_conditions'].get(product, {})
+        supplier_conditions = self.supplier_conditions.get(product, {})
         min_price = supplier_conditions.get('min_price', None)
         available_quantity = supplier_conditions.get('quantity', 0)
 
@@ -169,7 +138,7 @@ class SupplierAgent(BDI_Agent):
         requested_quantity = counteroffer['quantity']
 
         # Retrieve supplier's conditions
-        supplier_conditions = self.beliefs['supplier_conditions'].get(product, {})
+        supplier_conditions = self.supplier_conditions.get(product, {})
         min_price = supplier_conditions.get('min_price', None)
         available_quantity = supplier_conditions.get('quantity', 0)
 
