@@ -1,24 +1,25 @@
 import logging
+import math
 import numpy as np
 import multiprocessing
 from deap import creator
 from functools import partial
 from copy import deepcopy
-from BaseAgent import BDI_Agent
+from src.BaseAgent import BDI_Agent
 import json
-from utils import calculate_percent, negotiate, popularity_percent
+from src.utils import calculate_percent, negotiate, popularity_percent
 import random
-from Simulation_methods import run_short_simulation
-from Genetic_Algorithm import Genetic_algorith
+from src.Simulation_methods import run_short_simulation
+from src.Genetic_Algorithm import Genetic_algorith
 
-des_int_json_file = open('./Desires-Intentions/Companies.json',)
-int_exec_json_file = open('./Intentions-Execution/Companies.json',)
+des_int_json_file = open('./src/Desires-Intentions/Companies.json',)
+int_exec_json_file = open('./src/Intentions-Execution/Companies.json',)
 
 desires_intentions = json.load(des_int_json_file)
 intentions_execution = json.load(int_exec_json_file)
 
 
-logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
+logging.basicConfig(filename='src/simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CompanyAgent(BDI_Agent):
     def __init__(self, name, knowledge, revenue, subproduct_stock, product_stock,max_revenue_percent,total_inversion):
@@ -38,6 +39,15 @@ class CompanyAgent(BDI_Agent):
         self.sales={}
         self.popularity={}
         self.predicted_revenue = {}
+        self.products={
+            product: {
+            "prices_list": [],
+            "produced_quantity": 0,
+            "sold_quantity": 0,
+            "initial_popularity": -1,
+            "final_popularity": 0
+            } for product in product_stock.keys()
+        }
         
 
 
@@ -108,6 +118,8 @@ class CompanyAgent(BDI_Agent):
 
                 market_env.public_variables['product_prices'][self.name][product]['price'] = new_price
                 
+                self.update_product_prices_list(product, new_price)
+                
                 if show_logs: logging.info(f"{self.name} adjusted the price of {product} from {price} to {new_price:.2f}.")
 
     def designate_budget(self, show_logs,market_env):
@@ -117,7 +129,7 @@ class CompanyAgent(BDI_Agent):
             budget_distribuitor=Genetic_algorith(fitness_function=partial(self.calcular_fitness,market_env=market_env),
                                                  individual_function=partial(self.crear_individuo),
                                                  mut_function=partial(self.mut_rebalance, market_env=market_env), cx_function=partial(self.cx_rebalance))
-            product_budget_percent=budget_distribuitor.optimize(20,30,0.7,0)
+            product_budget_percent=budget_distribuitor.optimize(1,1,0.7,0)
             budget_distribuitor.close_pool()
             if 'info' in product_budget_percent:
                 self.predicted_revenue = deepcopy(product_budget_percent['info'])
@@ -184,15 +196,15 @@ class CompanyAgent(BDI_Agent):
                         self.total_inversion[product]+= required_quantity*self.subproduct_stock[subproduct]['price']
                         self.subproduct_stock[subproduct]["stock"] -= required_quantity
 
-                    # Update product stock and product prices
+                    # Update product stock, product prices and products count
                     self.product_stock[product] += 1
                     product_prices[product]['stock'] += 1
+                    self.products[product]["produced_quantity"] += 1
                     # Track production
                     products_created += 1
 
                     
                 else:
-                    # If can't produce more, break the loop for this product
                     break
 
         
@@ -402,3 +414,6 @@ class CompanyAgent(BDI_Agent):
         return ind1, ind2
 
 
+
+    def update_product_prices_list(self, product_name, new_price):
+        self.products[product_name]["prices_list"].append(new_price)

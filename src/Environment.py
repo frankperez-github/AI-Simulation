@@ -20,3 +20,5 @@ class MarketEnvironment:
         self.hidden_variables = {
             'marketing_stonks' : []
         }
+    def get_company_data(self, company_name):
+        return self.public_variables["companies"][company_name]

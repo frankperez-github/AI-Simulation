@@ -1,19 +1,19 @@
 import random
 import logging
-from BaseAgent import BDI_Agent
+from src.BaseAgent import BDI_Agent
 import numpy as np
-from Environment import MarketEnvironment
+from src.Environment import MarketEnvironment
 import json
 
 
-des_int_json_file = open('./Desires-Intentions/Customers.json',)
-int_exec_json_file = open('./Intentions-Execution/Customers.json',)
+des_int_json_file = open('./src/Desires-Intentions/Customers.json',)
+int_exec_json_file = open('./src/Intentions-Execution/Customers.json',)
 
 desires_intentions = json.load(des_int_json_file)
 intentions_execution = json.load(int_exec_json_file)
 
 
-logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
+logging.basicConfig(filename='src/simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class CustomerAgent(BDI_Agent):
     def __init__(self, name, actitud):
@@ -27,9 +27,6 @@ class CustomerAgent(BDI_Agent):
     def perceive_environment(self,market_env:MarketEnvironment, show_logs):
         self.beliefs['product_prices'] = market_env.public_variables['product_prices']
         self.beliefs['company_popularity']=market_env.public_variables['company_popularity']
-        #for company in self.beliefs['company_popularity']:
-        #    for product in self.beliefs['company_popularity'][company]:
-        #        self.beliefs['company_popularity'][company][product]= random.normalvariate(self.beliefs['company_popularity'][company][product],7)
         if show_logs: logging.info(f"{self.name} has perceived the environment and updated beliefs about available products and prices.")
 
     def form_desires(self, show_logs):
@@ -47,7 +44,7 @@ class CustomerAgent(BDI_Agent):
     def execute_intention(self, intention, market_env, show_logs):
         if show_logs: logging.info(f"{self.name} will execute the intention: {intention}")
         execution = intentions_execution[intention]
-        products = [product for product in self.alpha if self.alpha[product]>0] # Used in actions execution
+        products = [product for product in self.alpha if self.alpha[product]>0] 
         for action in execution["actions"]:
             exec(action)
         if show_logs: logging.info(eval(execution["log"]))
@@ -60,35 +57,28 @@ class CustomerAgent(BDI_Agent):
                 quantity = quantities[i]
                 available_stock = market_env.public_variables['product_prices'][cheapest_company][selected_product]['stock'] 
                 if quantity>0:
-                    #market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] += market_env.public_variables['marketing_config']['popularity_by_sales']
-                    #act_popularity = market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product]
-                    #if act_popularity > 100: market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] = 100
-                    #if act_popularity < 0: market_env.public_variables['companies'][cheapest_company].beliefs['company_popularity'][cheapest_company][selected_product] = 0
-
                     if available_stock >= quantity:
-                        # Reducir stock
                         market_env.public_variables['product_prices'][cheapest_company][selected_product]['stock'] -= quantity
-                        #Actualizar ganancia
                         if selected_product in market_env.public_variables['companies'][cheapest_company].revenue:
                             market_env.public_variables['companies'][cheapest_company].revenue[selected_product]+= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
                         else:
                             market_env.public_variables['companies'][cheapest_company].revenue[selected_product]= quantity * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
+                        
+                        market_env.public_variables["companies"][cheapest_company].products[selected_product]["sold_quantity"] += quantity
 
-                        # Registrar la compra en el log
                         if show_logs: logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
 
                     else:
-                        # No hay suficiente stock
                         if show_logs: logging.warning(f"{self.name} attempted to buy {quantity} units of {selected_product}, but only {available_stock} units were available. So the customer decides to buy {quantity} units of {selected_product} ")
-                         # Reduce stock
                         market_env.public_variables['product_prices'][cheapest_company][selected_product]['stock'] -= available_stock
-                        #Actualizar ganancia
                         if selected_product in market_env.public_variables['companies'][cheapest_company].revenue:
-                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product]+= available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
+                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product] += available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
                         else:
-                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product]= available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
+                            market_env.public_variables['companies'][cheapest_company].revenue[selected_product] = available_stock * market_env.public_variables['product_prices'][cheapest_company][selected_product]['price']
 
-                        # Registrar la compra en el log
+                        
+                        market_env.public_variables["companies"][cheapest_company].products[selected_product]["sold_quantity"] += quantity
+
                         if show_logs: logging.info(f"{self.name} bought {quantity} units of {selected_product} from {cheapest_company}.")
                        
     def buy_cheapest_products(self,selected_products,market_env:MarketEnvironment, show_logs):

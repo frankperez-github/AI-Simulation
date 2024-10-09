@@ -224,7 +224,7 @@ def make_transaction(company, supplier, offer, show_logs):
     company.subproduct_stock[product]['price'] = price 
 
     if show_logs: logging.info(f"{company.name} added {quantity} units of {product} to stock at {price} per unit.")
-    
+
     # Update the company's total budget only for this specific product
     company.total_budget += allocated_budget - total_cost 
     if show_logs: logging.info(f"{company.name}'s total budget updated to {company.total_budget}.")

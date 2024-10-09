@@ -3,13 +3,13 @@ import math
 import logging
 from copy import deepcopy
 import pandas as pd
-from Environment import MarketEnvironment
-from utils import marketing
+from src.Environment import MarketEnvironment
+from src.utils import marketing
 
 
 def run_simulation(market_env:MarketEnvironment, steps=3):
     for step in range(steps):
-        logging.info(f"\n========== Day {step + 1} ==========")
+        logging.info(f"\n========== Month {step + 1} ==========")
         for agent in list(market_env.public_variables['companies'].values()):
             agent.perceive_environment(market_env, show_logs=True)
             agent.form_desires(show_logs=True)
@@ -36,6 +36,9 @@ def run_simulation(market_env:MarketEnvironment, steps=3):
                     market_env.public_variables['company_popularity'][company][product] = int(market_env.public_variables['company_popularity'][company][product] - quantity)
                 else: 
                     market_env.public_variables['company_popularity'][company][product] = 0
+                if market_env.public_variables["companies"][company].products[product]["initial_popularity"] == -1:
+                    market_env.public_variables["companies"][company].products[product]["initial_popularity"] = market_env.public_variables['company_popularity'][company][product]
+                market_env.public_variables["companies"][company].products[product]["final_popularity"] = market_env.public_variables['company_popularity'][company][product]
                 if show_logs: logging.info(f"{company}'s {product} lost {quantity} of popularity due to time. Now has {market_env.public_variables['company_popularity'][company][product]} of popularity")
 
         

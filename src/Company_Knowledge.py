@@ -1,4 +1,4 @@
-from Knowledge import Knowledge
+from src.Knowledge import Knowledge
 
 
 class Company_Knowledge(Knowledge):

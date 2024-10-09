@@ -1,18 +1,18 @@
 import random
 import logging
-from BaseAgent import BDI_Agent
-from Environment import MarketEnvironment
+from src.BaseAgent import BDI_Agent
+from src.Environment import MarketEnvironment
 import json
-from Knowledge import *
+from src.Knowledge import *
  
-des_int_json_file = open('./Desires-Intentions/Suppliers.json',)
-int_exec_json_file = open('./Intentions-Execution/Suppliers.json',)
+des_int_json_file = open('./src/Desires-Intentions/Suppliers.json',)
+int_exec_json_file = open('./src/Intentions-Execution/Suppliers.json',)
 
 desires_intentions = json.load(des_int_json_file)
 intentions_execution = json.load(int_exec_json_file)
 
 
-logging.basicConfig(filename='simulation_logs.log', level=logging.INFO, format='%(message)s')
+logging.basicConfig(filename='src/simulation_logs.log', level=logging.INFO, format='%(message)s')
 
 class SupplierAgent(BDI_Agent):
     def __init__(self, name, products, knowledge):
